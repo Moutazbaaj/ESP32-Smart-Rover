@@ -1,117 +1,88 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-// Hardware pins
-#define VRX_PIN 34  // Joystick X-axis (left/right)
-#define VRY_PIN 35  // Joystick Y-axis (forward/backward)
-#define DEADZONE 15 // Minimum movement threshold (%)
-#define BUTTON_PIN 12 // Pin for the button (replace with your actual pin)
+// MAC address of the main ESP32 (Rover)
+uint8_t roverMac[6] = {0x80, 0x7D, 0x3A, 0xED, 0xF3, 0xA0};
 
-// MAC address of the receiver (ROVER)
-uint8_t roverMAC[] = {0x80, 0x7D, 0x3A, 0xED, 0xF3, 0xA0};
+// Button pins for control
+#define BUTTON_FORWARD_PIN 12
+#define BUTTON_BACKWARD_PIN 13
+#define BUTTON_LEFT_PIN 14
+#define BUTTON_RIGHT_PIN 27
 
-typedef struct {
-    int x;          // -100 (left) to 100 (right)
-    int y;          // -100 (backward) to 100 (forward)
-    bool autoMode;  // Not used in this version
-    int speed;      // Fixed speed
-    uint32_t counter; 
-} Command;
+uint8_t lastCommand = 0;  // Stores the last sent command
 
-Command commandData;
-uint32_t commandCounter = 0;
-bool peerAdded = false;
-unsigned long lastSendTime = 0;
-bool lastButtonState = false;
-
-void OnDataSent(const uint8_t *mac, esp_now_send_status_t status) {
-    if (status != ESP_NOW_SEND_SUCCESS) {
-        Serial.println("Delivery failed");
-        peerAdded = false;
-    }
-}
-
-void setupESP_NOW() {
-    WiFi.mode(WIFI_STA);
-    if (esp_now_init() != ESP_OK) {
-        Serial.println("ESP-NOW init failed");
-        ESP.restart();
-    }
-    esp_now_register_send_cb(OnDataSent);
-}
-
-void addPeer() {
-    esp_now_peer_info_t peerInfo;
-    memset(&peerInfo, 0, sizeof(peerInfo));
-    memcpy(peerInfo.peer_addr, roverMAC, 6);
-    peerInfo.channel = 0;
-    peerInfo.encrypt = false;
-    
-    if (esp_now_add_peer(&peerInfo) == ESP_OK) {
-        peerAdded = true;
-        Serial.println("Peer connected");
-    }
-}
-
-void sendCurrentState() {
-    if (!peerAdded) {
-        addPeer();
-        if (!peerAdded) return;
-    }
-
-    commandData.counter = commandCounter++;
-    esp_err_t result = esp_now_send(roverMAC, (uint8_t *)&commandData, sizeof(commandData));
-    
-    if (result == ESP_OK) {
-        lastSendTime = millis();
-        Serial.printf("Sent: X=%d, Y=%d\n", commandData.x, commandData.y);
-    } else {
-        Serial.println("Send error");
-        peerAdded = false;
-    }
-}
-
+// Initialize ESP-NOW
 void setup() {
     Serial.begin(115200);
-    delay(1000);
-    Serial.println("==== PROPER JOYSTICK CONTROL ====");
+    Serial.println("===== CONTROLLER ESP32 INITIALIZATION =====");
 
-    pinMode(VRX_PIN, INPUT);
-    pinMode(VRY_PIN, INPUT);
-    pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
-    setupESP_NOW();
-    addPeer();
+    // Initialize button pins
+    pinMode(BUTTON_FORWARD_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_BACKWARD_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
 
-    // Initialize command data
-    commandData.speed = 6;       // Medium speed
-    commandData.autoMode = false;
+    // Initialize ESP-NOW
+    WiFi.mode(WIFI_STA);
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+    }
 
-    // Ensure no movement at the start
-    commandData.x = 0;
-    commandData.y = 0;
+    // Add the Rover as a peer
+    esp_now_peer_info_t peerInfo;
+    memcpy(peerInfo.peer_addr, roverMac, 6);
+    peerInfo.channel = 0;
+    peerInfo.encrypt = false;
+
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add peer");
+    }
 }
 
 void loop() {
-    // Read raw joystick values (0-4095)
-    int xRaw = analogRead(VRX_PIN);
-    int yRaw = analogRead(VRY_PIN);
-    
-    // Convert to -100 to 100 range with proper inversion
-    commandData.y = map(yRaw, 0, 4095, 100, -100);  // Forward/Backward
-    commandData.x = map(xRaw, 0, 4095, -100, 100);   // Left/Right
+    uint8_t command = 0;  // Default to stop
 
-    // Apply deadzone
-    if (abs(commandData.x) < DEADZONE) commandData.x = 0;
-    if (abs(commandData.y) < DEADZONE) commandData.y = 0;
+    bool forward = (digitalRead(BUTTON_FORWARD_PIN) == LOW);
+    bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
+    bool left = (digitalRead(BUTTON_LEFT_PIN) == LOW);
+    bool right = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
 
-    // Read button state
-    bool buttonState = digitalRead(BUTTON_PIN) == LOW; // Active low button
-
-    // Send data only when joystick is moved or button is pressed
-    if ((millis() - lastSendTime >= 50) && (commandData.x != 0 || commandData.y != 0 || buttonState != lastButtonState)) {
-        sendCurrentState();
-        lastButtonState = buttonState; // Update the button state
+    if (forward) {
+        if (left) {
+            command = 5;  // Forward-Left
+        } else if (right) {
+            command = 6;  // Forward-Right
+        } else {
+            command = 1;  // Forward
+        }
+    } else if (backward) {
+        if (left) {
+            command = 7;  // Backward-Left
+        } else if (right) {
+            command = 8;  // Backward-Right
+        } else {
+            command = 2;  // Backward
+        }
+    } else if (left) {
+        command = 3;  // Left
+    } else if (right) {
+        command = 4;  // Right
     }
 
-    delay(10);
+    // Send command only if it has changed
+    if (command != lastCommand) {
+        sendCommand(command);
+        lastCommand = command;
+    }
+
+    delay(100);  // Small delay to debounce button presses
+}
+
+// Send control command via ESP-NOW
+void sendCommand(uint8_t command) {
+    esp_now_send(roverMac, &command, sizeof(command));
+    Serial.print("Sending command: ");
+    Serial.println(command);
 }

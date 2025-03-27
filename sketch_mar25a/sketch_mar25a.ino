@@ -1,13 +1,14 @@
+#include <esp_now.h>
+#include <WiFi.h>
+
+// Motor pins
 #define IN1 18    // Rear Motor Forward
 #define IN2 19    // Rear Motor Backward
 #define IN3 21    // Front Motor Left
 #define IN4 22    // Front Motor Right
 
-#define BUTTON_FORWARD_PIN 12  // Pin for the forward button
-#define BUTTON_BACKWARD_PIN 13 // Pin for the backward button
-#define BUTTON_LEFT_PIN 14     // Pin for the left button
-#define BUTTON_RIGHT_PIN 27    // Pin for the right button
-#define BUTTON_STOP_PIN 26     // Pin for the stop button
+// MAC address of the controller ESP32
+uint8_t controllerMac[6] = {0x3C, 0x71, 0xBF, 0x10, 0xD0, 0x60};
 
 // Motor control functions
 void moveForward() {
@@ -30,77 +31,101 @@ void turnRight() {
     digitalWrite(IN4, HIGH);
 }
 
-void stopDriving() {
+void stopAllMotors() {
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
-}
-
-void stopSteering() {
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
 }
 
-void stopAllMotors() {
-    stopDriving();
-    stopSteering();
-}
-
-// Initialize the motor control pins
+// Setup ESP-NOW
 void setup() {
     Serial.begin(115200);
-    Serial.println("===== ROVER INITIALIZATION =====");
+    Serial.println("===== ROVER ESP32 INITIALIZATION =====");
 
     // Initialize motor control pins
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
     pinMode(IN3, OUTPUT);
     pinMode(IN4, OUTPUT);
-    
-    // Initialize button pins
-    pinMode(BUTTON_FORWARD_PIN, INPUT_PULLUP);
-    pinMode(BUTTON_BACKWARD_PIN, INPUT_PULLUP);
-    pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
-    pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
-    pinMode(BUTTON_STOP_PIN, INPUT_PULLUP);
-    
+
+    // Initialize ESP-NOW
+    WiFi.mode(WIFI_STA);
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+    }
+
+    // Register callback to handle incoming messages
+    esp_now_register_recv_cb(onDataReceived);
+
+    // Add the controller as a peer
+    esp_now_peer_info_t peerInfo;
+    memcpy(peerInfo.peer_addr, controllerMac, 6);
+    peerInfo.channel = 0;  // Default channel
+    peerInfo.encrypt = false;  // No encryption
+
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add peer");
+    }
+
     stopAllMotors();  // Ensure motors stop on initialization
 }
 
-// Read button states
-bool readButton(int pin) {
-    bool state = digitalRead(pin) == LOW;  // Active LOW button
-    if (state) {
-        Serial.print("Button pressed on pin ");
-        Serial.println(pin);
+// Handle incoming control data
+void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int len) {
+    // Only process if the MAC address matches the controller
+    if (memcmp(sender->src_addr, controllerMac, 6) == 0) {
+        Serial.println("Received data from controller");
+
+        if (len == 1) {
+            stopAllMotors(); // Stop all motors before executing a new command
+            switch (data[0]) {
+                case 1:  // Forward
+                    moveForward();
+                    Serial.println("Moving Forward");
+                    break;
+                case 2:  // Backward
+                    moveBackward();
+                    Serial.println("Moving Backward");
+                    break;
+                case 3:  // Left
+                    turnLeft();
+                    Serial.println("Turning Left");
+                    break;
+                case 4:  // Right
+                    turnRight();
+                    Serial.println("Turning Right");
+                    break;
+                case 5:  // Forward-Left
+                    moveForward();
+                    turnLeft();
+                    Serial.println("Moving Forward and Turning Left");
+                    break;
+                case 6:  // Forward-Right
+                    moveForward();
+                    turnRight();
+                    Serial.println("Moving Forward and Turning Right");
+                    break;
+                case 7:  // Backward-Left
+                    moveBackward();
+                    turnLeft();
+                    Serial.println("Moving Backward and Turning Left");
+                    break;
+                case 8:  // Backward-Right
+                    moveBackward();
+                    turnRight();
+                    Serial.println("Moving Backward and Turning Right");
+                    break;
+                case 0:  // Stop
+                    stopAllMotors();
+                    Serial.println("Stopping All Motors");
+                    break;
+            }
+        }
     }
-    return state;
 }
 
 void loop() {
-    // Check button states
-    if (readButton(BUTTON_FORWARD_PIN)) {
-        moveForward();
-        Serial.println("Moving Forward");
-    } 
-    else if (readButton(BUTTON_BACKWARD_PIN)) {
-        moveBackward();
-        Serial.println("Moving Backward");
-    } 
-    else if (readButton(BUTTON_LEFT_PIN)) {
-        turnLeft();
-        Serial.println("Turning Left");
-    } 
-    else if (readButton(BUTTON_RIGHT_PIN)) {
-        turnRight();
-        Serial.println("Turning Right");
-    } 
-    else if (readButton(BUTTON_STOP_PIN)) {
-        stopAllMotors();
-        Serial.println("Stopping All Motors");
-    } 
-    else {
-        stopAllMotors();  // Stop if no button is pressed
-    }
-
-    delay(100);  // Small delay to debounce button presses
+    // Nothing needed here as the motor control happens through ESP-NOW messages
 }
