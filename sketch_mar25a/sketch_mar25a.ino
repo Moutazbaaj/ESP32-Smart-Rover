@@ -22,13 +22,13 @@ void moveBackward() {
 }
 
 void turnLeft() {
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
 }
 
 void turnRight() {
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
 }
 
 void stopAllMotors() {
@@ -89,33 +89,33 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
                     moveBackward();
                     Serial.println("Moving Backward");
                     break;
-                case 3:  // Left
-                    turnLeft();
-                    Serial.println("Turning Left");
-                    break;
-                case 4:  // Right
+                 case 3:  // Right
                     turnRight();
                     Serial.println("Turning Right");
                     break;
-                case 5:  // Forward-Left
+                case 4:  // Left
+                    turnLeft();
+                    Serial.println("Turning Left");
+                    break;
+                 case 5:  // Forward-Right
+                    moveForward();
+                    turnRight();
+                    Serial.println("Moving Forward and Turning Right");
+                    break;    
+                case 6:  // Forward-Left
                     moveForward();
                     turnLeft();
                     Serial.println("Moving Forward and Turning Left");
                     break;
-                case 6:  // Forward-Right
-                    moveForward();
-                    turnRight();
-                    Serial.println("Moving Forward and Turning Right");
-                    break;
-                case 7:  // Backward-Left
-                    moveBackward();
-                    turnLeft();
-                    Serial.println("Moving Backward and Turning Left");
-                    break;
-                case 8:  // Backward-Right
+                case 7:  // Backward-Right
                     moveBackward();
                     turnRight();
                     Serial.println("Moving Backward and Turning Right");
+                    break;
+                case 8:  // Backward-Left
+                    moveBackward();
+                    turnLeft();
+                    Serial.println("Moving Backward and Turning Left");
                     break;
                 case 0:  // Stop
                     stopAllMotors();
