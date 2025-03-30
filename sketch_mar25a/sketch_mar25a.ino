@@ -5,8 +5,8 @@
 // Motor pins
 #define IN1 18    // Rear Motor Forward
 #define IN2 19    // Rear Motor Backward
-#define IN3 21    // Front Motor Left
-#define IN4 22    // Front Motor Right
+#define IN3 16  // Front Motor Left
+#define IN4 17    // Front Motor Right
 
 // Ultrasonic Sensor pins
 #define TRIG_PIN 23
@@ -19,9 +19,9 @@
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
 
 // Navigation settings
-const int OBSTACLE_DISTANCE_CM = 20;  // Stop if obstacle < 20cm
-const int MIN_CLEARANCE = 30;         // Minimum acceptable clearance (cm)
-const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
+const int OBSTACLE_DISTANCE_CM = 30;  // Stop if obstacle < 20cm
+const int MIN_CLEARANCE = 20;         // Minimum acceptable clearance (cm)
+const unsigned long AUTO_DRIVE_INTERVAL = 200; // Check every 500ms
 
 // Servo settings
 const int SERVO_MIN = 0;
