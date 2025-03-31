@@ -281,6 +281,8 @@ void autonomousDrive() {
 
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
+    moveBackward();
+    delay(1200);
     stopAllMotors();
     currentState = SCANNING ;
     ledControl();
