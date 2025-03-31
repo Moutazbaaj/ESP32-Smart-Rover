@@ -39,9 +39,9 @@ const int SCAN_STEP = 5;              // Degrees per step
 
 // LED Mapping
 enum LEDPosition {
-  FRONT_LEFT_WHITE = 0b10000000,   // Q7
+  FRONT_LEFT_WHITE = 0b00100000,   // Q7
   FRONT_LEFT_YELLOW = 0b01000000,  // Q6
-  FRONT_RIGHT_WHITE = 0b00100000,  // Q5
+  FRONT_RIGHT_WHITE = 0b10000000,  // Q5
   FRONT_RIGHT_YELLOW = 0b00010000, // Q4
   BACK_LEFT_RED = 0b00001000,      // Q3
   BACK_LEFT_YELLOW = 0b00000100,   // Q2
@@ -118,18 +118,13 @@ void ledControl() {
   if(currentState == FORWARD ) {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW);
   } else if (currentState == BACKWARD ) {
+    updateLEDs(FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  } else if (currentState == SCANNING ) {
+    updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW);
+  } else if (currentState == STOPPED ) {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
-  } else if (currentState == TURNINGR ) {
-    updateLEDs(FRONT_LEFT_WHITE );
-  } else if (currentState == TURNINGL ) {
-    updateLEDs(FRONT_LEFT_WHITE );
-  }  else if (currentState == SCANNING ) {
-    updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW);
-  } else {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE);
   }
 }
-
 
 // Shift Register LED Control
 void updateLEDs(uint8_t pattern) {
@@ -143,6 +138,7 @@ void moveForward() {
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   currentState = FORWARD;
+  ledControl();
   Serial.println("MOVING FORWARD");
 }
 
@@ -150,6 +146,7 @@ void moveBackward() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
   currentState = BACKWARD;
+  ledControl();
   Serial.println("MOVING BACKWARD");
 }
 
@@ -157,6 +154,7 @@ void turnLeft() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
   currentState = TURNINGL;
+ // ledControl();
   Serial.println("TURNING LEFT");
 }
 
@@ -164,6 +162,7 @@ void turnRight() {
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
   currentState = TURNINGR;
+ // ledControl();
   Serial.println("TURNING RIGHT");
 }
 
@@ -173,6 +172,7 @@ void stopAllMotors() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
   currentState = STOPPED;
+  ledControl();
   Serial.println("STOPPED");
 }
 
@@ -203,7 +203,8 @@ void smoothServoMove(int targetAngle) {
 // Full environment scan
 void scanEnvironment() {
   Serial.println("Starting 180° environment scan");
-  
+    currentState = SCANNING ;
+    ledControl();
   int bestAngle = SERVO_CENTER;
   float maxDistance = 0;
   
@@ -316,8 +317,6 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 }
 
 void loop() {
-
-  ledControl();
 
   if (selfDrivingMode && millis() - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
     autonomousDrive();
