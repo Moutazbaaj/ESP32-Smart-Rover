@@ -116,12 +116,18 @@ void setup() {
 
 void ledControl() {
   if(currentState == FORWARD ) {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW);
-  } else if (currentState == BACKWARD ) {
-    updateLEDs(FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
-  } else if (currentState == SCANNING ) {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
+  } else if (currentState == TURNINGR) {
+    updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | */ FRONT_RIGHT_YELLOW /*| BACK_LEFT_YELLOW */| BACK_RIGHT_YELLOW);
+  } else if (currentState == TURNINGL) {
+    updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | */ FRONT_LEFT_YELLOW/* | FRONT_RIGHT_YELLOW */| BACK_LEFT_YELLOW /*| BACK_RIGHT_YELLOW*/);
+  } else if (currentState == BACKWARD) {
+    updateLEDs(/*FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |*/BACK_LEFT_RED | BACK_RIGHT_RED);
+  } else if (currentState == SCANNING) {
     updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW);
-  } else if (currentState == STOPPED ) {
+  } else if (currentState == STOPPED) {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  } else {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
   }
 }
@@ -145,7 +151,7 @@ void moveForward() {
 void moveBackward() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
-  currentState = BACKWARD;
+  currentState = BACKWARD; 
   ledControl();
   Serial.println("MOVING BACKWARD");
 }
@@ -154,7 +160,7 @@ void turnLeft() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
   currentState = TURNINGL;
- // ledControl();
+  ledControl();
   Serial.println("TURNING LEFT");
 }
 
@@ -162,7 +168,7 @@ void turnRight() {
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
   currentState = TURNINGR;
- // ledControl();
+  ledControl();
   Serial.println("TURNING RIGHT");
 }
 
@@ -203,8 +209,6 @@ void smoothServoMove(int targetAngle) {
 // Full environment scan
 void scanEnvironment() {
   Serial.println("Starting 180° environment scan");
-    currentState = SCANNING ;
-    ledControl();
   int bestAngle = SERVO_CENTER;
   float maxDistance = 0;
   
@@ -274,7 +278,10 @@ void autonomousDrive() {
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
     stopAllMotors();
+    currentState = SCANNING ;
+    ledControl();
     scanEnvironment();
+     stopAllMotors();
   } 
   else {
     moveForward();
@@ -302,15 +309,15 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
     
     stopAllMotors();
         switch (data[0]) {
-            case 1: moveForward(); break;
-            case 2: moveBackward(); break;
-            case 3: turnLeft(); break; 
-            case 4: turnRight(); break;  
-            case 5: moveForward(); turnLeft(); break;
-            case 6: moveForward(); turnRight(); break;
-            case 7: moveBackward(); turnLeft(); break;
-            case 8: moveBackward(); turnRight(); break;
-            case 0: stopAllMotors(); break;
+            case 1: moveForward(); currentState = FORWARD; break;
+            case 2: moveBackward(); currentState = BACKWARD; break;
+            case 3: turnLeft(); currentState = TURNINGL; break; 
+            case 4: turnRight(); currentState = TURNINGR; break;  
+            case 5: moveForward(); turnLeft(); currentState = FORWARD; break;
+            case 6: moveForward(); turnRight(); currentState = FORWARD; break;
+            case 7: moveBackward(); turnLeft(); currentState = BACKWARD; break;
+            case 8: moveBackward(); turnRight(); currentState = BACKWARD; break;
+            case 0: stopAllMotors(); currentState = STOPPED; break;
         }
 
   }
