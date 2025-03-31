@@ -256,12 +256,16 @@ void scanEnvironment() {
   else if (bestAngle < 90) {
     Serial.println(">>> Slight left turn");
     turnLeft();
-    delay(600);
+    delay(800);
+    moveForward();
+    delay(1200);
   }
   else if (bestAngle > 90) {
     Serial.println(">>> Slight right turn");
     turnRight();
-    delay(600);
+    delay(800);
+    moveForward();
+    delay(1200);
   }
   else {
     Serial.println(">>> Path clear ahead");
@@ -281,7 +285,7 @@ void autonomousDrive() {
     currentState = SCANNING ;
     ledControl();
     scanEnvironment();
-     stopAllMotors();
+    stopAllMotors();
   } 
   else {
     moveForward();
