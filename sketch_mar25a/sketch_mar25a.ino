@@ -2,6 +2,13 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
 
+// Shift Register Pins
+#define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
+#define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
+#define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK)
+#define OE_PIN     35  // ESP32 GPIO35 → SN74HC595 pin 13 (OE)
+#define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
+
 // Motor pins
 #define IN1 18    // Rear Motor Forward
 #define IN2 19    // Rear Motor Backward
@@ -30,8 +37,24 @@ const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 15;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
+// LED Mapping
+enum LEDPosition {
+  FRONT_LEFT_WHITE = 0b10000000,   // Q7
+  FRONT_LEFT_YELLOW = 0b01000000,  // Q6
+  FRONT_RIGHT_WHITE = 0b00100000,  // Q5
+  FRONT_RIGHT_YELLOW = 0b00010000, // Q4
+  BACK_LEFT_RED = 0b00001000,      // Q3
+  BACK_LEFT_YELLOW = 0b00000100,   // Q2
+  BACK_RIGHT_RED = 0b00000010,     // Q1
+  BACK_RIGHT_YELLOW = 0b00000001   // Q0
+};
+
+unsigned long lastBlinkTime = 0;
+bool blinkState = false;
+const unsigned long BLINK_INTERVAL = 500; // 500ms blink interval
+
 // Movement states
-enum State { STOPPED, FORWARD, BACKWARD, TURNING, SCANNING };
+enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
 
 Servo usServo;
@@ -41,6 +64,16 @@ unsigned long lastAutoDriveCheck = 0;
 void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
+
+  // Initialize shift register
+  pinMode(DATA_PIN, OUTPUT);
+  pinMode(CLOCK_PIN, OUTPUT);
+  pinMode(LATCH_PIN, OUTPUT);
+  pinMode(OE_PIN, OUTPUT);
+  pinMode(MR_PIN, OUTPUT);
+  digitalWrite(OE_PIN, LOW);   // Enable outputs
+  digitalWrite(MR_PIN, HIGH);  // Disable reset
+  updateLEDs(0);               // Clear all LEDs
 
   // Initialize motors
   pinMode(IN1, OUTPUT);
@@ -81,6 +114,30 @@ void setup() {
   randomSeed(analogRead(0));
 }
 
+void ledControl() {
+  if(currentState == FORWARD ) {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW);
+  } else if (currentState == BACKWARD ) {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  } else if (currentState == TURNINGR ) {
+    updateLEDs(FRONT_LEFT_WHITE );
+  } else if (currentState == TURNINGL ) {
+    updateLEDs(FRONT_LEFT_WHITE );
+  }  else if (currentState == SCANNING ) {
+    updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW);
+  } else {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE);
+  }
+}
+
+
+// Shift Register LED Control
+void updateLEDs(uint8_t pattern) {
+  digitalWrite(LATCH_PIN, LOW);
+  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, pattern);
+  digitalWrite(LATCH_PIN, HIGH);
+}
+
 // Motor control functions
 void moveForward() {
   digitalWrite(IN1, HIGH);
@@ -99,14 +156,14 @@ void moveBackward() {
 void turnLeft() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  currentState = TURNING;
+  currentState = TURNINGL;
   Serial.println("TURNING LEFT");
 }
 
 void turnRight() {
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
-  currentState = TURNING;
+  currentState = TURNINGR;
   Serial.println("TURNING RIGHT");
 }
 
@@ -259,6 +316,9 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 }
 
 void loop() {
+
+  ledControl();
+
   if (selfDrivingMode && millis() - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
     autonomousDrive();
     lastAutoDriveCheck = millis();
