@@ -41,8 +41,8 @@ typedef struct RoverStatus {
 } RoverStatus;
 */
 // Navigation settings
-const int OBSTACLE_DISTANCE_CM =25;  // Stop if obstacle < 20cm
-const int MIN_CLEARANCE = 30;         // Minimum acceptable clearance (cm)
+const int OBSTACLE_DISTANCE_CM =30;  // Stop if obstacle < 20cm
+const int MIN_CLEARANCE = 35;         // Minimum acceptable clearance (cm)
 const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
 
 // Servo settings
@@ -51,6 +51,8 @@ const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 15;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
+
+int motorSpeed = 255;  // Default speed (0-255)
 
 // LED Mapping
 enum LEDPosition {
@@ -90,7 +92,6 @@ void setup() {
   digitalWrite(MR_PIN, HIGH);  // Disable reset
   updateLEDs(0);               // Clear all LEDs
 
-  // Initialize motors
   // Initialize motors
   ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
   ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
@@ -275,7 +276,7 @@ void scanEnvironment() {
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
    // sendRoverStatus("Hard left turn", maxDistance, bestAngle);
-    moveBackward(200);
+    moveBackward(220);
     delay(800);
     turnLeft();
     delay(1200);
@@ -283,7 +284,7 @@ void scanEnvironment() {
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
    // sendRoverStatus("Hard right turn", maxDistance, bestAngle);
-    moveBackward(200);
+    moveBackward(220);
     delay(800);
     turnRight();
     delay(1200);
@@ -293,7 +294,7 @@ void scanEnvironment() {
     // sendRoverStatus("Slight left turn", maxDistance, bestAngle);
     turnLeft();
     delay(800);
-    moveForward(200);
+    moveForward(220);
     delay(1200);
   }
   else if (bestAngle > 90) {
@@ -301,7 +302,7 @@ void scanEnvironment() {
     //sendRoverStatus("Slight right turn", maxDistance, bestAngle);
     turnRight();
     delay(800);
-    moveForward(200);
+    moveForward(220);
     delay(1200);
   }
   else {
@@ -322,7 +323,7 @@ void autonomousDrive() {
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
    // sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
-    moveBackward(200);
+    moveBackward(220);
     delay(300);
     stopAllMotors();
     currentState = SCANNING ;
@@ -332,7 +333,7 @@ void autonomousDrive() {
   } 
   else {
     //sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    moveForward(200);
+    moveForward(220);
   }
 }
 
@@ -355,16 +356,31 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       return;
     }
     
+
+       // Adjust speed
+      if (data[0] == 10) {  
+         motorSpeed = min(motorSpeed + 5, 255);  // Increase speed
+         Serial.print("Speed Increased: ");
+         Serial.println(motorSpeed);
+        return;
+      }
+      if (data[0] == 11) {  
+        motorSpeed = max(motorSpeed - 5, 200);  // Decrease speed
+         Serial.print("Speed Decreased: ");
+         Serial.println(motorSpeed);
+         return;
+        }
+
     stopAllMotors();
         switch (data[0]) {
-            case 1: moveForward(255); currentState = FORWARD; break;
-            case 2: moveBackward(255); currentState = BACKWARD; break;
+            case 1: moveForward(motorSpeed); currentState = FORWARD; break;
+            case 2: moveBackward(motorSpeed); currentState = BACKWARD; break;
             case 3: turnLeft(); currentState = TURNINGL; break; 
             case 4: turnRight(); currentState = TURNINGR; break;  
-            case 5: moveForward(255); turnLeft(); currentState = FORWARD; break;
-            case 6: moveForward(255); turnRight(); currentState = FORWARD; break;
-            case 7: moveBackward(255); turnLeft(); currentState = BACKWARD; break;
-            case 8: moveBackward(255); turnRight(); currentState = BACKWARD; break;
+            case 5: moveForward(motorSpeed); turnLeft(); currentState = FORWARD; break;
+            case 6: moveForward(motorSpeed); turnRight(); currentState = FORWARD; break;
+            case 7: moveBackward(motorSpeed); turnLeft(); currentState = BACKWARD; break;
+            case 8: moveBackward(motorSpeed); turnRight(); currentState = BACKWARD; break;
             case 0: stopAllMotors(); currentState = STOPPED; break;
         }
 

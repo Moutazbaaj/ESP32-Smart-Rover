@@ -11,6 +11,8 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 #define BUTTON_BACKWARD_PIN 13
 #define BUTTON_LEFT_PIN     14
 #define BUTTON_RIGHT_PIN    27
+#define BUTTON_SP_UP        33
+#define BUTTON_SP_DW        32
 /*
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -94,6 +96,8 @@ void setup() {
   pinMode(BUTTON_BACKWARD_PIN, INPUT_PULLUP);
   pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
   pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_SP_UP, INPUT_PULLUP);
+  pinMode(BUTTON_SP_DW, INPUT_PULLUP);
   /*
     // Initialize OLED
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
@@ -195,6 +199,8 @@ void loop() {
   bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
   bool left     = (digitalRead(BUTTON_LEFT_PIN) == LOW);
   bool right    = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
+  bool up       = (digitalRead(BUTTON_SP_UP) == LOW);
+  bool down     = (digitalRead(BUTTON_SP_DW) == LOW);
 
   // Left+Right combo detection
   if (left && right && !comboActive) {
@@ -218,24 +224,30 @@ void loop() {
   // Normal button commands
   if (!comboActive && (millis() - lastDebounceTime > DEBOUNCE_DELAY)) {
     uint8_t command = 0;
-    
+
+    // Movement commands
     if (forward) {
-      if (left)      command = 5; // Forward-Left
-      else if (right) command = 6; // Forward-Right
-      else           command = 1; // Forward
+        if (left)      command = 5; // Forward-Left
+        else if (right) command = 6; // Forward-Right
+        else           command = 1; // Forward
     } 
     else if (backward) {
-      if (left)      command = 7; // Backward-Left
-      else if (right) command = 8; // Backward-Right
-      else           command = 2; // Backward
+        if (left)      command = 7; // Backward-Left
+        else if (right) command = 8; // Backward-Right
+        else           command = 2; // Backward
     } 
     else if (left)  command = 3; // Left 
     else if (right) command = 4; // Right
+    else if (up)    command = 10; // fast
+    else if (down)  command = 11; // slow
 
+
+
+    // Ensure command is not blocked and send it
     if (command != lastCommand) {
-      sendCommand(command);
-      lastDebounceTime = millis();
+        sendCommand(command);
+        lastDebounceTime = millis();
     }
-  }
+}
   delay(10);
 }
