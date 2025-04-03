@@ -11,9 +11,9 @@
 #define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
 
 // Motor pins
-#define IN1 2   // Rear Motor Forward
-#define IN2 4    // Rear Motor Backward
-#define IN3 16  // Front Motor Left
+#define IN1 18    // Rear Motor Forward
+#define IN2 19    // Rear Motor Backward
+#define IN3 16    // Front Motor Left
 #define IN4 17    // Front Motor Right
 
 // Ultrasonic Sensor pins
@@ -23,6 +23,14 @@
 // Servo pin
 #define SERVO_PIN 26
 
+
+// PWM channels
+#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
+#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
+#define PWM_FREQ  5000      // PWM frequency in Hz
+#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
+
+ 
 // MAC address
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
 /*
@@ -83,8 +91,11 @@ void setup() {
   updateLEDs(0);               // Clear all LEDs
 
   // Initialize motors
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
+  // Initialize motors
+  ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
+  //pinMode(IN1, OUTPUT);
+  //pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
@@ -127,7 +138,6 @@ void setup() {
 }
 
 
-
 void ledControl() {
   if(currentState == FORWARD ) {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
@@ -154,18 +164,18 @@ void updateLEDs(uint8_t pattern) {
 }
 
 // Motor control functions
-void moveForward() {
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
+void moveForward(int speed) {
+  ledcWrite(PWM_CHANNEL_IN1, speed);  
+  ledcWrite(PWM_CHANNEL_IN2, 0);
   currentState = FORWARD;
   //sendRoverStatus("MOVING FORWARD", maxDistance, bestAngle);
   ledControl();
   Serial.println("MOVING FORWARD");
 }
 
-void moveBackward() {
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
+void moveBackward(int speed){
+  ledcWrite(PWM_CHANNEL_IN1, 0);
+  ledcWrite(PWM_CHANNEL_IN2, speed);
   currentState = BACKWARD; 
   //sendRoverStatus("MOVING BACKWARD", maxDistance, bestAngle);
   ledControl();
@@ -191,8 +201,8 @@ void turnRight() {
 }
 
 void stopAllMotors() {
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
+  ledcWrite(PWM_CHANNEL_IN1, 0);
+  ledcWrite(PWM_CHANNEL_IN2, 0);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
   currentState = STOPPED;
@@ -265,7 +275,7 @@ void scanEnvironment() {
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
    // sendRoverStatus("Hard left turn", maxDistance, bestAngle);
-    moveBackward();
+    moveBackward(200);
     delay(800);
     turnLeft();
     delay(1200);
@@ -273,7 +283,7 @@ void scanEnvironment() {
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
    // sendRoverStatus("Hard right turn", maxDistance, bestAngle);
-    moveBackward();
+    moveBackward(200);
     delay(800);
     turnRight();
     delay(1200);
@@ -283,7 +293,7 @@ void scanEnvironment() {
     // sendRoverStatus("Slight left turn", maxDistance, bestAngle);
     turnLeft();
     delay(800);
-    moveForward();
+    moveForward(200);
     delay(1200);
   }
   else if (bestAngle > 90) {
@@ -291,7 +301,7 @@ void scanEnvironment() {
     //sendRoverStatus("Slight right turn", maxDistance, bestAngle);
     turnRight();
     delay(800);
-    moveForward();
+    moveForward(200);
     delay(1200);
   }
   else {
@@ -312,7 +322,7 @@ void autonomousDrive() {
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
    // sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
-    moveBackward();
+    moveBackward(200);
     delay(300);
     stopAllMotors();
     currentState = SCANNING ;
@@ -322,7 +332,7 @@ void autonomousDrive() {
   } 
   else {
     //sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    moveForward();
+    moveForward(200);
   }
 }
 
@@ -347,14 +357,14 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
     
     stopAllMotors();
         switch (data[0]) {
-            case 1: moveForward(); currentState = FORWARD; break;
-            case 2: moveBackward(); currentState = BACKWARD; break;
+            case 1: moveForward(255); currentState = FORWARD; break;
+            case 2: moveBackward(255); currentState = BACKWARD; break;
             case 3: turnLeft(); currentState = TURNINGL; break; 
             case 4: turnRight(); currentState = TURNINGR; break;  
-            case 5: moveForward(); turnLeft(); currentState = FORWARD; break;
-            case 6: moveForward(); turnRight(); currentState = FORWARD; break;
-            case 7: moveBackward(); turnLeft(); currentState = BACKWARD; break;
-            case 8: moveBackward(); turnRight(); currentState = BACKWARD; break;
+            case 5: moveForward(255); turnLeft(); currentState = FORWARD; break;
+            case 6: moveForward(255); turnRight(); currentState = FORWARD; break;
+            case 7: moveBackward(255); turnLeft(); currentState = BACKWARD; break;
+            case 8: moveBackward(255); turnRight(); currentState = BACKWARD; break;
             case 0: stopAllMotors(); currentState = STOPPED; break;
         }
 
