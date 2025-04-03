@@ -276,7 +276,7 @@ void scanEnvironment() {
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
    // sendRoverStatus("Hard left turn", maxDistance, bestAngle);
-    moveBackward(220);
+    moveBackward(205);
     delay(800);
     turnLeft();
     delay(1200);
@@ -284,7 +284,7 @@ void scanEnvironment() {
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
    // sendRoverStatus("Hard right turn", maxDistance, bestAngle);
-    moveBackward(220);
+    moveBackward(205);
     delay(800);
     turnRight();
     delay(1200);
@@ -294,7 +294,7 @@ void scanEnvironment() {
     // sendRoverStatus("Slight left turn", maxDistance, bestAngle);
     turnLeft();
     delay(800);
-    moveForward(220);
+    moveForward(205);
     delay(1200);
   }
   else if (bestAngle > 90) {
@@ -302,7 +302,7 @@ void scanEnvironment() {
     //sendRoverStatus("Slight right turn", maxDistance, bestAngle);
     turnRight();
     delay(800);
-    moveForward(220);
+    moveForward(205);
     delay(1200);
   }
   else {
@@ -333,7 +333,7 @@ void autonomousDrive() {
   } 
   else {
     //sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    moveForward(220);
+    moveForward(205);
   }
 }
 
@@ -356,7 +356,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       return;
     }
     
-
+/*
        // Adjust speed
       if (data[0] == 10) {  
          motorSpeed = min(motorSpeed + 5, 255);  // Increase speed
@@ -370,7 +370,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
          Serial.println(motorSpeed);
          return;
         }
-
+*/
     stopAllMotors();
         switch (data[0]) {
             case 1: moveForward(motorSpeed); currentState = FORWARD; break;
@@ -381,6 +381,8 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
             case 6: moveForward(motorSpeed); turnRight(); currentState = FORWARD; break;
             case 7: moveBackward(motorSpeed); turnLeft(); currentState = BACKWARD; break;
             case 8: moveBackward(motorSpeed); turnRight(); currentState = BACKWARD; break;
+            case 10: motorSpeed = min(motorSpeed + 5, 255); Serial.print("Speed Increased: "); Serial.println(motorSpeed); break;
+            case 11: motorSpeed = max(motorSpeed - 5, 200);  Serial.print("Speed Decreased: "); Serial.println(motorSpeed); break;
             case 0: stopAllMotors(); currentState = STOPPED; break;
         }
 
