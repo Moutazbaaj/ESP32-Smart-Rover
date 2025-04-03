@@ -1,17 +1,18 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ESP32Servo.h>
+#include <EEPROM.h>
 
 // Shift Register Pins
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 #define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
 #define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK)
-#define OE_PIN     35  // ESP32 GPIO35 → SN74HC595 pin 13 (OE)
+#define OE_PIN     34  // ESP32 GPIO35 → SN74HC595 pin 13 (OE)
 #define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
 
 // Motor pins
-#define IN1 18    // Rear Motor Forward
-#define IN2 19    // Rear Motor Backward
+#define IN1 2   // Rear Motor Forward
+#define IN2 4    // Rear Motor Backward
 #define IN3 16  // Front Motor Left
 #define IN4 17    // Front Motor Right
 
@@ -24,11 +25,17 @@
 
 // MAC address
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
-
+/*
+typedef struct RoverStatus {
+    char action[10];  // Action description (e.g., "Turning Left")
+    float distanceCM; // Distance detected
+    int servoAngle;   // Angle where clearance was found
+} RoverStatus;
+*/
 // Navigation settings
-const int OBSTACLE_DISTANCE_CM = 30;  // Stop if obstacle < 20cm
-const int MIN_CLEARANCE = 20;         // Minimum acceptable clearance (cm)
-const unsigned long AUTO_DRIVE_INTERVAL = 200; // Check every 500ms
+const int OBSTACLE_DISTANCE_CM =25;  // Stop if obstacle < 20cm
+const int MIN_CLEARANCE = 30;         // Minimum acceptable clearance (cm)
+const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
 
 // Servo settings
 const int SERVO_MIN = 0;
@@ -48,11 +55,11 @@ enum LEDPosition {
   BACK_RIGHT_RED = 0b00000010,     // Q1
   BACK_RIGHT_YELLOW = 0b00000001   // Q0
 };
-
+/*
 unsigned long lastBlinkTime = 0;
 bool blinkState = false;
 const unsigned long BLINK_INTERVAL = 500; // 500ms blink interval
-
+*/
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
@@ -95,8 +102,9 @@ void setup() {
   // Initialize ESP-NOW
   WiFi.mode(WIFI_STA);
   if (esp_now_init() != ESP_OK) {
-    Serial.println("ESP-NOW Init Failed");
-    return;
+    Serial.println("ESP-NOW Init Failed, restarting...");
+    ESP.restart();
+    //return;
   }
 
   esp_now_register_recv_cb(onDataReceived);
@@ -105,14 +113,20 @@ void setup() {
   memcpy(peerInfo.peer_addr, controllerMac, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
-  
+  peerInfo.ifidx = WIFI_IF_STA;
+
+
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
+  } else {
+    Serial.println("Peer added successfully");
   }
 
   stopAllMotors();
-  randomSeed(analogRead(0));
+  //randomSeed(analogRead(0));
 }
+
+
 
 void ledControl() {
   if(currentState == FORWARD ) {
@@ -144,6 +158,7 @@ void moveForward() {
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   currentState = FORWARD;
+  //sendRoverStatus("MOVING FORWARD", maxDistance, bestAngle);
   ledControl();
   Serial.println("MOVING FORWARD");
 }
@@ -152,6 +167,7 @@ void moveBackward() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
   currentState = BACKWARD; 
+  //sendRoverStatus("MOVING BACKWARD", maxDistance, bestAngle);
   ledControl();
   Serial.println("MOVING BACKWARD");
 }
@@ -160,6 +176,7 @@ void turnLeft() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
   currentState = TURNINGL;
+  //  sendRoverStatus("TURNING LEFT", maxDistance, bestAngle);
   ledControl();
   Serial.println("TURNING LEFT");
 }
@@ -168,6 +185,7 @@ void turnRight() {
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
   currentState = TURNINGR;
+  //sendRoverStatus("TURNING RIGHT", maxDistance, bestAngle);
   ledControl();
   Serial.println("TURNING RIGHT");
 }
@@ -178,6 +196,7 @@ void stopAllMotors() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
   currentState = STOPPED;
+  //  sendRoverStatus("STOPPED", maxDistance, bestAngle);
   ledControl();
   Serial.println("STOPPED");
 }
@@ -238,9 +257,14 @@ void scanEnvironment() {
   Serial.print(maxDistance);
   Serial.println("cm clearance)");
   
+
+  // Send decision update to controller
+  //sendRoverStatus("Scanning Done", maxDistance, bestAngle);
+
   // Decision making
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
+   // sendRoverStatus("Hard left turn", maxDistance, bestAngle);
     moveBackward();
     delay(800);
     turnLeft();
@@ -248,6 +272,7 @@ void scanEnvironment() {
   } 
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
+   // sendRoverStatus("Hard right turn", maxDistance, bestAngle);
     moveBackward();
     delay(800);
     turnRight();
@@ -255,6 +280,7 @@ void scanEnvironment() {
   }
   else if (bestAngle < 90) {
     Serial.println(">>> Slight left turn");
+    // sendRoverStatus("Slight left turn", maxDistance, bestAngle);
     turnLeft();
     delay(800);
     moveForward();
@@ -262,6 +288,7 @@ void scanEnvironment() {
   }
   else if (bestAngle > 90) {
     Serial.println(">>> Slight right turn");
+    //sendRoverStatus("Slight right turn", maxDistance, bestAngle);
     turnRight();
     delay(800);
     moveForward();
@@ -269,7 +296,10 @@ void scanEnvironment() {
   }
   else {
     Serial.println(">>> Path clear ahead");
+   // sendRoverStatus("Path clear ahead", maxDistance, bestAngle);
   }
+
+
 }
 
 // Autonomous navigation
@@ -281,8 +311,9 @@ void autonomousDrive() {
 
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
+   // sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
     moveBackward();
-    delay(1200);
+    delay(300);
     stopAllMotors();
     currentState = SCANNING ;
     ledControl();
@@ -290,6 +321,7 @@ void autonomousDrive() {
     stopAllMotors();
   } 
   else {
+    //sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
     moveForward();
   }
 }
@@ -328,7 +360,23 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 
   }
 }
-
+/*
+// Function to send data back to the controller
+void sendRoverStatus(const char* action, float distance, int angle) {
+    RoverStatus status;
+    strncpy(status.action, action, sizeof(status.action));
+    status.distanceCM = distance;
+    status.servoAngle = angle;
+    
+    esp_err_t result = esp_now_send(controllerMac, (uint8_t*)&status, sizeof(status));
+    if (result != ESP_OK) {
+        Serial.println("Failed to send status");
+    } else {
+        Serial.print("Sent status: ");
+        Serial.println(action);
+    }
+}
+*/
 void loop() {
 
   if (selfDrivingMode && millis() - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
