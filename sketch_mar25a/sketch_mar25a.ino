@@ -33,13 +33,13 @@
  
 // MAC address
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
-/*
+
 typedef struct RoverStatus {
-    char action[10];  // Action description (e.g., "Turning Left")
+    char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
 } RoverStatus;
-*/
+
 // Navigation settings
 const int OBSTACLE_DISTANCE_CM =30;  // Stop if obstacle < 20cm
 const int MIN_CLEARANCE = 35;         // Minimum acceptable clearance (cm)
@@ -49,7 +49,7 @@ const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
 const int SERVO_MIN = 0;
 const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
-const int SERVO_SPEED = 15;           // ms between steps (lower = smoother)
+const int SERVO_SPEED = 10;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
 int motorSpeed = 255;  // Default speed (0-255)
@@ -70,6 +70,7 @@ unsigned long lastBlinkTime = 0;
 bool blinkState = false;
 const unsigned long BLINK_INTERVAL = 500; // 500ms blink interval
 */
+
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
@@ -134,7 +135,7 @@ void setup() {
     Serial.println("Peer added successfully");
   }
 
-  stopAllMotors();
+  //stopAllMotors();
   //randomSeed(analogRead(0));
 }
 
@@ -169,7 +170,6 @@ void moveForward(int speed) {
   ledcWrite(PWM_CHANNEL_IN1, speed);  
   ledcWrite(PWM_CHANNEL_IN2, 0);
   currentState = FORWARD;
-  //sendRoverStatus("MOVING FORWARD", maxDistance, bestAngle);
   ledControl();
   Serial.println("MOVING FORWARD");
 }
@@ -178,7 +178,6 @@ void moveBackward(int speed){
   ledcWrite(PWM_CHANNEL_IN1, 0);
   ledcWrite(PWM_CHANNEL_IN2, speed);
   currentState = BACKWARD; 
-  //sendRoverStatus("MOVING BACKWARD", maxDistance, bestAngle);
   ledControl();
   Serial.println("MOVING BACKWARD");
 }
@@ -187,7 +186,6 @@ void turnLeft() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
   currentState = TURNINGL;
-  //  sendRoverStatus("TURNING LEFT", maxDistance, bestAngle);
   ledControl();
   Serial.println("TURNING LEFT");
 }
@@ -196,7 +194,6 @@ void turnRight() {
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
   currentState = TURNINGR;
-  //sendRoverStatus("TURNING RIGHT", maxDistance, bestAngle);
   ledControl();
   Serial.println("TURNING RIGHT");
 }
@@ -207,7 +204,6 @@ void stopAllMotors() {
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
   currentState = STOPPED;
-  //  sendRoverStatus("STOPPED", maxDistance, bestAngle);
   ledControl();
   Serial.println("STOPPED");
 }
@@ -239,7 +235,8 @@ void smoothServoMove(int targetAngle) {
 // Full environment scan
 void scanEnvironment() {
   Serial.println("Starting 180° environment scan");
-  int bestAngle = SERVO_CENTER;
+
+  int bestAngle = SERVO_CENTER;   
   float maxDistance = 0;
   
   // Left to right scan
@@ -253,6 +250,8 @@ void scanEnvironment() {
     Serial.print(distance);
     Serial.println("cm");
     
+    sendRoverStatus("Scanning...", distance, angle);
+
     if (distance > maxDistance && distance > MIN_CLEARANCE) {
       maxDistance = distance;
       bestAngle = angle;
@@ -270,12 +269,12 @@ void scanEnvironment() {
   
 
   // Send decision update to controller
-  //sendRoverStatus("Scanning Done", maxDistance, bestAngle);
+  sendRoverStatus("Scanning Done", maxDistance, bestAngle);
 
   // Decision making
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
-   // sendRoverStatus("Hard left turn", maxDistance, bestAngle);
+    sendRoverStatus("Hard left turn", maxDistance, bestAngle);
     moveBackward(205);
     delay(800);
     turnLeft();
@@ -283,7 +282,7 @@ void scanEnvironment() {
   } 
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
-   // sendRoverStatus("Hard right turn", maxDistance, bestAngle);
+    sendRoverStatus("Hard right turn", maxDistance, bestAngle);
     moveBackward(205);
     delay(800);
     turnRight();
@@ -291,7 +290,7 @@ void scanEnvironment() {
   }
   else if (bestAngle < 90) {
     Serial.println(">>> Slight left turn");
-    // sendRoverStatus("Slight left turn", maxDistance, bestAngle);
+     sendRoverStatus("Slight left turn", maxDistance, bestAngle);
     turnLeft();
     delay(800);
     moveForward(205);
@@ -299,7 +298,7 @@ void scanEnvironment() {
   }
   else if (bestAngle > 90) {
     Serial.println(">>> Slight right turn");
-    //sendRoverStatus("Slight right turn", maxDistance, bestAngle);
+    sendRoverStatus("Slight right turn", maxDistance, bestAngle);
     turnRight();
     delay(800);
     moveForward(205);
@@ -307,7 +306,7 @@ void scanEnvironment() {
   }
   else {
     Serial.println(">>> Path clear ahead");
-   // sendRoverStatus("Path clear ahead", maxDistance, bestAngle);
+    sendRoverStatus("Path clear ahead", maxDistance, bestAngle);
   }
 
 
@@ -322,9 +321,9 @@ void autonomousDrive() {
 
   if (distance < OBSTACLE_DISTANCE_CM) {
     Serial.println("! OBSTACLE DETECTED !");
-   // sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
+    sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
     moveBackward(220);
-    delay(300);
+    delay(400);
     stopAllMotors();
     currentState = SCANNING ;
     ledControl();
@@ -332,7 +331,7 @@ void autonomousDrive() {
     stopAllMotors();
   } 
   else {
-    //sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
+    sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
     moveForward(205);
   }
 }
@@ -355,23 +354,9 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       Serial.println("(Ignoring - in self-driving mode)");
       return;
     }
-    
-/*
-       // Adjust speed
-      if (data[0] == 10) {  
-         motorSpeed = min(motorSpeed + 5, 255);  // Increase speed
-         Serial.print("Speed Increased: ");
-         Serial.println(motorSpeed);
-        return;
-      }
-      if (data[0] == 11) {  
-        motorSpeed = max(motorSpeed - 5, 200);  // Decrease speed
-         Serial.print("Speed Decreased: ");
-         Serial.println(motorSpeed);
-         return;
-        }
-*/
-    stopAllMotors();
+
+    //stopAllMotors();
+
         switch (data[0]) {
             case 1: moveForward(motorSpeed); currentState = FORWARD; break;
             case 2: moveBackward(motorSpeed); currentState = BACKWARD; break;
@@ -388,7 +373,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 
   }
 }
-/*
+
 // Function to send data back to the controller
 void sendRoverStatus(const char* action, float distance, int angle) {
     RoverStatus status;
@@ -404,9 +389,9 @@ void sendRoverStatus(const char* action, float distance, int angle) {
         Serial.println(action);
     }
 }
-*/
-void loop() {
 
+void loop() {
+  
   if (selfDrivingMode && millis() - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
     autonomousDrive();
     lastAutoDriveCheck = millis();

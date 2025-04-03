@@ -13,13 +13,13 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 #define BUTTON_RIGHT_PIN    27
 #define BUTTON_SP_UP        33
 #define BUTTON_SP_DW        32
-/*
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET    -1
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-*/
+
 // Combo detection
 unsigned long comboStartTime = 0;
 bool comboActive = false;
@@ -28,14 +28,14 @@ const int COMBO_DURATION = 3000;
 uint8_t lastCommand = 0;
 unsigned long lastDebounceTime = 0;
 const int DEBOUNCE_DELAY = 50;
-/*
+
 typedef struct RoverStatus {
-    char action[10];  // Action description (e.g., "Turning Left")
+    char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
 } RoverStatus;
 
-*/
+
 /*
 // Pixel Art
 // Car Icon (16x16)
@@ -88,22 +88,23 @@ static const unsigned char warning_icon[] PROGMEM = {
   0b00011000
 };
 */
+
 void setup() {
   Serial.begin(115200);
   Serial.println("===== CONTROLLER (Direction Fixed) =====");
 
-  pinMode(BUTTON_FORWARD_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_BACKWARD_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_SP_UP, INPUT_PULLUP);
-  pinMode(BUTTON_SP_DW, INPUT_PULLUP);
-  /*
+   pinMode(BUTTON_FORWARD_PIN, INPUT_PULLUP);
+   pinMode(BUTTON_BACKWARD_PIN, INPUT_PULLUP);
+   pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
+   pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
+   pinMode(BUTTON_SP_UP, INPUT_PULLUP);
+   pinMode(BUTTON_SP_DW, INPUT_PULLUP);
+  
     // Initialize OLED
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+ if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
      Serial.println("SSD1306 allocation failed");
      for(;;);
-  }
+ }
    
    display.clearDisplay();
    display.setTextSize(1);
@@ -111,16 +112,16 @@ void setup() {
    display.setCursor(0, 10);
    display.println("Waiting for data...");
    display.display();
-*/
+
   WiFi.mode(WIFI_STA);
 
     if (esp_now_init() != ESP_OK) {
   Serial.println("ESP-NOW Init Failed, restarting...");
   ESP.restart();
-}
-/*
+ }
+
   esp_now_register_recv_cb(onDataReceived);
-*/
+
 
 
   esp_now_peer_info_t peerInfo;
@@ -136,13 +137,8 @@ void setup() {
     Serial.println("Peer added successfully");
   }
 
-
-
-
-
-
 }
-/*
+
 void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int len) {
     Serial.print("Data received, length: ");
     Serial.println(len);
@@ -160,22 +156,26 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 
         display.clearDisplay();
         display.setTextSize(1);
-        display.setCursor(0, 0);
+        display.setCursor(30, 0);
         display.println("ROVER STATUS");
         display.setTextSize(1);
 
         // Show Action
-        display.setCursor(0, 20);
-        display.print("Action: ");
-        display.println(status.action);
+        display.setCursor(0, 12);
+        display.print("Action:");
 
-        display.setCursor(0, 35);
-        display.print("Distance: ");
+        display.setCursor(0, 22);
+        display.print(status.action);
+
+        display.setCursor(0, 32);
+        display.print("Distance:");
+
+        display.setCursor(0, 42);
         display.print(status.distanceCM);
         display.println(" cm");
 
-        display.setCursor(0, 50);
-        display.print("Angle: ");
+        display.setCursor(0, 54);
+        display.print("Angle:");
         display.print(status.servoAngle);
         display.println("°");
 
@@ -184,7 +184,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         Serial.println("Invalid data length, skipping...");
     }
 }
-*/
+
 
 void sendCommand(uint8_t command) {
   esp_now_send(roverMac, &command, sizeof(command));
@@ -193,7 +193,92 @@ void sendCommand(uint8_t command) {
   lastCommand = command;
 }
 
+void loop() {
+  static uint8_t lastSentCommand = 0;
+  static bool comboWasActive = false;
+  
+  bool forward  = (digitalRead(BUTTON_FORWARD_PIN) == LOW);
+  bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
+  bool left     = (digitalRead(BUTTON_LEFT_PIN) == LOW);
+  bool right    = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
+  bool up       = (digitalRead(BUTTON_SP_UP) == LOW);
+  bool down     = (digitalRead(BUTTON_SP_DW) == LOW);
+  bool anyPressed = forward || backward || left || right || up || down;
 
+  // Self-driving combo detection (Left+Right)
+  if (left && right && !comboActive) {
+    comboStartTime = millis();
+    comboActive = true;
+    Serial.println("Combo started (hold 3s for self-driving)");
+  } 
+  else if (!left || !right) {
+    comboActive = false;
+  }
+
+  // Handle self-driving activation
+  if (comboActive && (millis() - comboStartTime >= COMBO_DURATION)) {
+    sendCommand(9);
+    comboActive = false;
+    comboWasActive = true;
+    Serial.println("SELF-DRIVING MODE ACTIVATED!");
+    delay(1000);
+    return;
+  }
+
+  // Main command logic
+  if (!comboActive && (millis() - lastDebounceTime > DEBOUNCE_DELAY)) {
+    uint8_t newCommand = 0;
+    bool isCombo = false;
+
+    // Determine new command
+    if (forward) {
+      if (left)      { newCommand = 5; isCombo = true; }
+      else if (right) { newCommand = 6; isCombo = true; }
+      else           newCommand = 1;
+    } 
+    else if (backward) {
+      if (left)      { newCommand = 7; isCombo = true; }
+      else if (right) { newCommand = 8; isCombo = true; }
+      else           newCommand = 2;
+    } 
+    else if (left)  newCommand = 3;
+    else if (right) newCommand = 4;
+    else if (up)    newCommand = 10;
+    else if (down)  newCommand = 11;
+
+    // Handle command transitions
+    if (isCombo) {
+      // Case 1: Combo command (5-8)
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = true;
+    } 
+    else if (comboWasActive && anyPressed) {
+      // Case 2: Transition from combo to normal command
+      sendCommand(0);
+      delay(5);
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = false;
+    }
+    else if (anyPressed && newCommand != lastSentCommand) {
+      // Case 3: Normal command change
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = false;
+    }
+    else if (!anyPressed && lastSentCommand != 0) {
+      // Case 4: All buttons released
+      sendCommand(0);
+      lastSentCommand = 0;
+      comboWasActive = false;
+    }
+
+    lastDebounceTime = millis();
+  }
+  delay(10);
+}
+/*
 void loop() {
   bool forward  = (digitalRead(BUTTON_FORWARD_PIN) == LOW);
   bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
@@ -250,4 +335,4 @@ void loop() {
     }
 }
   delay(10);
-}
+}*/
