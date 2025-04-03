@@ -65,6 +65,7 @@ enum LEDPosition {
   BACK_RIGHT_RED = 0b00000010,     // Q1
   BACK_RIGHT_YELLOW = 0b00000001   // Q0
 };
+
 /*
 unsigned long lastBlinkTime = 0;
 bool blinkState = false;

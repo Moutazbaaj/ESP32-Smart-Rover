@@ -223,13 +223,14 @@ void loop() {
     Serial.println("SELF-DRIVING MODE ACTIVATED!");
     delay(1000);
     return;
-  }
+  } 
+
 
   // Main command logic
   if (!comboActive && (millis() - lastDebounceTime > DEBOUNCE_DELAY)) {
     uint8_t newCommand = 0;
     bool isCombo = false;
-
+    
     // Determine new command
     if (forward) {
       if (left)      { newCommand = 5; isCombo = true; }
