@@ -33,12 +33,6 @@ typedef struct RoverStatus {
     char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
-    float accelX;         // X-axis acceleration
-    float accelY;         // Y-axis acceleration
-    float accelZ;         // Z-axis acceleration
-    float speed;          // Calculated speed
-    float pitch;   // Add these
-    float roll;    // two new fields
 } RoverStatus;
 
 
