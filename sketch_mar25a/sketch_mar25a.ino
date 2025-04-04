@@ -7,7 +7,7 @@
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 #define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
 #define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK)
-#define OE_PIN     34  // ESP32 GPIO35 → SN74HC595 pin 13 (OE)
+#define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
 #define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
 
 // Motor pins
@@ -49,9 +49,12 @@ const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
 const int SERVO_MIN = 0;
 const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
-const int SERVO_SPEED = 10;           // ms between steps (lower = smoother)
+const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
+
+
+// Mototr speed
 int motorSpeed = 255;  // Default speed (0-255)
 
 // LED Mapping
@@ -84,6 +87,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
 
+
   // Initialize shift register
   pinMode(DATA_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
@@ -113,6 +117,7 @@ void setup() {
   usServo.write(SERVO_CENTER);
   delay(500);
 
+
   // Initialize ESP-NOW
   WiFi.mode(WIFI_STA);
   if (esp_now_init() != ESP_OK) {
@@ -139,7 +144,6 @@ void setup() {
   //stopAllMotors();
   //randomSeed(analogRead(0));
 }
-
 
 void ledControl() {
   if(currentState == FORWARD ) {
@@ -397,5 +401,5 @@ void loop() {
     autonomousDrive();
     lastAutoDriveCheck = millis();
   }
-  delay(50);
+  delay(10);
 }

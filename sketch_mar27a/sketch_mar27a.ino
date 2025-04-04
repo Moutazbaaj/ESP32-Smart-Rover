@@ -33,6 +33,12 @@ typedef struct RoverStatus {
     char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
+    float accelX;         // X-axis acceleration
+    float accelY;         // Y-axis acceleration
+    float accelZ;         // Z-axis acceleration
+    float speed;          // Calculated speed
+    float pitch;   // Add these
+    float roll;    // two new fields
 } RoverStatus;
 
 
@@ -230,7 +236,7 @@ void loop() {
   if (!comboActive && (millis() - lastDebounceTime > DEBOUNCE_DELAY)) {
     uint8_t newCommand = 0;
     bool isCombo = false;
-    
+
     // Determine new command
     if (forward) {
       if (left)      { newCommand = 5; isCombo = true; }
