@@ -225,6 +225,24 @@ float getDistanceCM() {
   return duration * 0.034 / 2;
 }
 
+void adjustSpeedBasedOnDistance(float distance) {
+    int minSpeed = 200;  // Minimum motor speed (3.3V)
+    int maxSpeed = 255;  // Maximum motor speed
+    
+    // Ensure distance is within the measurable range
+    if (distance < 50) distance = 50;  // Clamp to minimum safe distance
+    if (distance > 600) distance = 600;  // Clamp to max sensor range
+
+    // Map distance [50 cm, 600 cm] to speed [200, 255]
+    int motorSpeed = map(distance, 50, 600, minSpeed, maxSpeed);
+
+    Serial.print("Adjusted Speed: ");
+    Serial.println(motorSpeed);
+
+    moveForward(motorSpeed);
+   //delay(1000);
+}
+
 // Smooth servo movement
 void smoothServoMove(int targetAngle) {
   static int currentPos = SERVO_CENTER;
@@ -314,6 +332,8 @@ void scanEnvironment() {
     sendRoverStatus("Path clear ahead", maxDistance, bestAngle);
   }
 
+   adjustSpeedBasedOnDistance(maxDistance);
+
 
 }
 
@@ -337,7 +357,9 @@ void autonomousDrive() {
   } 
   else {
     sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    moveForward(205);
+    //moveForward(205);
+    adjustSpeedBasedOnDistance(distance);
+
   }
 }
 
