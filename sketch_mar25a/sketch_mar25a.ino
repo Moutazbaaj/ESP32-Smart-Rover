@@ -83,6 +83,9 @@ Servo usServo;
 bool selfDrivingMode = false;
 unsigned long lastAutoDriveCheck = 0;
 
+// Light controll 
+bool isLightsOn = true;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
@@ -146,6 +149,7 @@ void setup() {
 }
 
 void ledControl() {
+  if (isLightsOn == true) {
   if(currentState == FORWARD ) {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
   } else if (currentState == TURNINGR) {
@@ -160,6 +164,7 @@ void ledControl() {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
   } else {
     updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  }
   }
 }
 
@@ -376,6 +381,14 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       stopAllMotors();
       return;
     }
+
+    if (data[0] == 12) {  // Toggle Lights
+      isLightsOn = !isLightsOn;
+      Serial.print("Lights: ");
+      Serial.println(isLightsOn ? "ON" : "OFF");
+      return;
+    }
+
 
     if (selfDrivingMode) {
       Serial.println("(Ignoring - in self-driving mode)");
