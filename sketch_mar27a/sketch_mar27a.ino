@@ -13,6 +13,7 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 #define BUTTON_RIGHT_PIN    27
 #define BUTTON_SP_UP        33
 #define BUTTON_SP_DW        32
+#define BUTTON_LIGHTS       35
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -28,6 +29,8 @@ const int COMBO_DURATION = 3000;
 uint8_t lastCommand = 0;
 unsigned long lastDebounceTime = 0;
 const int DEBOUNCE_DELAY = 50;
+
+//bool lightsOn = true;
 
 typedef struct RoverStatus {
     char action[20];  // Action description (e.g., "Turning Left")
@@ -99,6 +102,7 @@ void setup() {
    pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
    pinMode(BUTTON_SP_UP, INPUT_PULLUP);
    pinMode(BUTTON_SP_DW, INPUT_PULLUP);
+   pinMode(BUTTON_LIGHTS, INPUT_PULLUP);
   
     // Initialize OLED
  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
@@ -203,6 +207,7 @@ void loop() {
   bool right    = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
   bool up       = (digitalRead(BUTTON_SP_UP) == LOW);
   bool down     = (digitalRead(BUTTON_SP_DW) == LOW);
+  bool lights   = (digitalRead(BUTTON_LIGHTS == LOW));
   bool anyPressed = forward || backward || left || right || up || down;
 
   // Self-driving combo detection (Left+Right)
@@ -246,6 +251,7 @@ void loop() {
     else if (right) newCommand = 4;
     else if (up)    newCommand = 10;
     else if (down)  newCommand = 11;
+    else if (lights) newCommand = 12;
 
     // Handle command transitions
     if (isCombo) {
