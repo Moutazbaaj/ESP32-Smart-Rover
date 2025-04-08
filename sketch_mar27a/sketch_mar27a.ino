@@ -117,6 +117,7 @@ void setup() {
    display.println("Waiting for data...");
    display.display();
 
+   // Intilializ ESP NOW 
   WiFi.mode(WIFI_STA);
 
     if (esp_now_init() != ESP_OK) {
