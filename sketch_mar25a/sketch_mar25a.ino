@@ -52,7 +52,7 @@ const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
-
+// todo : send data if the rover is not in automde 
 
 // Mototr speed
 int motorSpeed = 255;  // Default speed (0-255)

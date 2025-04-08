@@ -38,7 +38,6 @@ typedef struct RoverStatus {
     int servoAngle;   // Angle where clearance was found
 } RoverStatus;
 
-
 /*
 // Pixel Art
 // Car Icon (16x16)
