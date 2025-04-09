@@ -4,11 +4,11 @@
 #include <EEPROM.h>
 
 // Shift Register Pins
-#define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
+#define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
 #define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
 #define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK)
 #define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
-#define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
+#define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 
 // Motor pins
 #define IN1 18    // Rear Motor Forward
