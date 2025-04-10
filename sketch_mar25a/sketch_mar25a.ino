@@ -69,11 +69,7 @@ enum LEDPosition {
   BACK_RIGHT_YELLOW = 0b00000001   // Q0
 };
 
-/*
-unsigned long lastBlinkTime = 0;
-bool blinkState = false;
-const unsigned long BLINK_INTERVAL = 500; // 500ms blink interval
-*/
+
 
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
