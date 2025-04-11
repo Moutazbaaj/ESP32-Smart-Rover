@@ -140,7 +140,7 @@ void setup() {
     Serial.println("Peer added successfully");
   }
 
-  //stopAllMotors();
+  stopAllMotors();
   //randomSeed(analogRead(0));
 }
 
