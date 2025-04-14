@@ -16,7 +16,7 @@
 #define IN3 16    // Front Motor Left
 #define IN4 17    // Front Motor Right
 
-// Ultrasonic Sensor pins
+// Ultrasonic Sensor pins.
 #define TRIG_PIN 23
 #define ECHO_PIN 25
 
