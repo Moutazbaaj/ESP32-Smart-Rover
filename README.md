@@ -2,7 +2,7 @@
 
 a rover project
 
-# Smart Rover with ESP32 – Open Source Project
+# Smart Rover with ESP32
 
 This is an open-source Smart Rover project built with ESP32 microcontrollers. The system includes a custom-built ESP-NOW remote controller and supports both manual and autonomous driving modes. The entire project is designed to operate without Wi-Fi, using low-latency ESP-NOW communication between the rover and its controller.
 
