@@ -60,6 +60,7 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 - [x] LED Indicators with Shift Register
 - [ ] Gyroscope + Orientation Module
 - [ ] OLED Display Integration
+- [ ] Solar system
 
 ## How It Works
 
