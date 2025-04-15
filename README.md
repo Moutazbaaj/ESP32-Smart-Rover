@@ -87,7 +87,8 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 | LEDs (White, Red, Yellow) | Indication system                         |
 | GY-BNO055 (Upcoming)   | Gyroscope & Accelerometer                     |
 | OLED Display (Upcoming)| Display on controller                        |
-| 3x AA 1.2V Batteries   | Power supply (boosted to 5V via converter)    |
+| 4x AA 1.5V Batteries   | Power supply (boosted to 5V via converter)    |
+| LM2596 DC to DC Buck Converter | to step up the current  |
 
 ## Project Goals
 
