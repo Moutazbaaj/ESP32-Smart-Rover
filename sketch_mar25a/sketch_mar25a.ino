@@ -23,6 +23,8 @@
 // Servo pin
 #define SERVO_PIN 26
 
+// KY-032
+#define OBSTACLE_PIN 22
 
 // PWM channels
 #define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
@@ -108,6 +110,9 @@ void setup() {
   // Initialize ultrasonic sensor
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+
+  // Intilize KY-032
+  pinMode(OBSTACLE_PIN, INPUT);
 
   // Initialize servo
   ESP32PWM::allocateTimer(0);
@@ -341,26 +346,26 @@ void scanEnvironment() {
 // Autonomous navigation
 void autonomousDrive() {
   float distance = getDistanceCM();
+  bool irObstacle = digitalRead(OBSTACLE_PIN) == LOW; // LOW means obstacle detected
+
   Serial.print("Forward distance: ");
   Serial.print(distance);
-  Serial.println("cm");
+  Serial.print(" cm | IR Sensor: ");
+  Serial.println(irObstacle ? "Obstacle Detected" : "Clear");
 
-  if (distance < OBSTACLE_DISTANCE_CM) {
+  if (distance < OBSTACLE_DISTANCE_CM || irObstacle) {
     Serial.println("! OBSTACLE DETECTED !");
     sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
     moveBackward(220);
     delay(400);
     stopAllMotors();
-    currentState = SCANNING ;
+    currentState = SCANNING;
     ledControl();
     scanEnvironment();
     stopAllMotors();
-  } 
-  else {
+  } else {
     sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    //moveForward(205);
     adjustSpeedBasedOnDistance(distance);
-
   }
 }
 
