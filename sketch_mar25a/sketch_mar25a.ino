@@ -10,11 +10,42 @@
 #define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 
+/*
 // Motor pins
 #define IN1 18    // Rear Motor Forward
 #define IN2 19    // Rear Motor Backward
 #define IN3 16    // Front Motor Left
 #define IN4 17    // Front Motor Right
+*/
+
+/*
+// PWM channels
+#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
+#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
+#define PWM_FREQ  5000      // PWM frequency in Hz
+#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
+*/
+
+
+// Motor pins
+#define AIN1 18    // Rear Motor Forward
+#define AIN2 19    // Rear Motor Backward
+#define BIN1 16    // Front Motor Left
+#define BIN2 17    // Front Motor Right
+#define STBY 14   // Must be an output-capable pin
+
+
+// PWM Pins
+#define PWMA 21   // Rear Motor
+#define PWMB 22 // Front Motor
+
+
+// PWM channels
+#define PWM_CHANNEL_A 21  // Channel 2 for IN1
+#define PWM_CHANNEL_B 22 // Channel 0 for IN2
+#define PWM_FREQ  5000      // PWM frequency in Hz
+#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
+
 
 // Ultrasonic Sensor pins
 #define TRIG_PIN 23
@@ -24,13 +55,8 @@
 #define SERVO_PIN 26
 
 // KY-032
-#define OBSTACLE_PIN 22
+#define OBSTACLE_PIN 0 //22
 
-// PWM channels
-#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
-#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
-#define PWM_FREQ  5000      // PWM frequency in Hz
-#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
 
  
 // MAC address
@@ -97,8 +123,9 @@ void setup() {
   pinMode(MR_PIN, OUTPUT);
   digitalWrite(OE_PIN, LOW);   // Enable outputs
   digitalWrite(MR_PIN, HIGH);  // Disable reset
-  updateLEDs(0);               // Clear all LEDs
-
+  updateLEDs(0); 
+                // Clear all LEDs
+/*
   // Initialize motors
   ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
   ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
@@ -106,6 +133,21 @@ void setup() {
   //pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
+
+*/
+
+    // Initialize motors
+  ledcAttach(PWM_CHANNEL_A, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(PWM_CHANNEL_B, PWM_FREQ, PWM_RESOLUTION);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+
+  // ---------------------
+
+  pinMode(STBY, OUTPUT);
+  digitalWrite(STBY, HIGH);
 
   // Initialize ultrasonic sensor
   pinMode(TRIG_PIN, OUTPUT);
@@ -176,6 +218,7 @@ void updateLEDs(uint8_t pattern) {
   digitalWrite(LATCH_PIN, HIGH);
 }
 
+/*
 // Motor control functions
 void moveForward(int speed) {
   ledcWrite(PWM_CHANNEL_IN1, speed);  
@@ -214,6 +257,57 @@ void stopAllMotors() {
   ledcWrite(PWM_CHANNEL_IN2, 0);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
+  currentState = STOPPED;
+  ledControl();
+  Serial.println("STOPPED");
+}
+
+*/
+
+// Motor control functions
+void moveForward(int speed) {
+  ledcWrite(PWM_CHANNEL_A, speed);  
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  currentState = FORWARD;
+  ledControl();
+  Serial.println("MOVING FORWARD");
+}
+
+void moveBackward(int speed){
+  ledcWrite(PWM_CHANNEL_A, speed);
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  currentState = BACKWARD; 
+  ledControl();
+  Serial.println("MOVING BACKWARD");
+}
+
+void turnLeft(int speed) {
+  ledcWrite(PWM_CHANNEL_B, speed);  
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+  currentState = TURNINGL;
+  ledControl();
+  Serial.println("TURNING LEFT");
+}
+
+void turnRight(int speed) {
+  ledcWrite(PWM_CHANNEL_B, speed); 
+  digitalWrite(BIN1, HIGH);
+  digitalWrite(BIN2, LOW);
+  ledControl();
+  Serial.println("TURNING RIGHT");
+  Serial.println("TURNING RIGHT");
+}
+
+void stopAllMotors() {
+  ledcWrite(PWM_CHANNEL_A, 0);
+  ledcWrite(PWM_CHANNEL_B, 0);
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, LOW);
   currentState = STOPPED;
   ledControl();
   Serial.println("STOPPED");
@@ -306,7 +400,7 @@ void scanEnvironment() {
     sendRoverStatus("Hard left turn", maxDistance, bestAngle);
     moveBackward(205);
     delay(800);
-    turnLeft();
+    turnLeft(255);
     delay(1200);
   } 
   else if (bestAngle > 120) {
@@ -314,13 +408,13 @@ void scanEnvironment() {
     sendRoverStatus("Hard right turn", maxDistance, bestAngle);
     moveBackward(205);
     delay(800);
-    turnRight();
+    turnRight(255);
     delay(1200);
   }
   else if (bestAngle < 90) {
     Serial.println(">>> Slight left turn");
      sendRoverStatus("Slight left turn", maxDistance, bestAngle);
-    turnLeft();
+    turnLeft(255);
     delay(800);
     moveForward(205);
     delay(1200);
@@ -328,7 +422,7 @@ void scanEnvironment() {
   else if (bestAngle > 90) {
     Serial.println(">>> Slight right turn");
     sendRoverStatus("Slight right turn", maxDistance, bestAngle);
-    turnRight();
+    turnRight(255);
     delay(800);
     moveForward(205);
     delay(1200);
@@ -401,12 +495,12 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         switch (data[0]) {
             case 1: moveForward(motorSpeed); currentState = FORWARD; break;
             case 2: moveBackward(motorSpeed); currentState = BACKWARD; break;
-            case 3: turnLeft(); currentState = TURNINGL; break; 
-            case 4: turnRight(); currentState = TURNINGR; break;  
-            case 5: moveForward(motorSpeed); turnLeft(); currentState = FORWARD; break;
-            case 6: moveForward(motorSpeed); turnRight(); currentState = FORWARD; break;
-            case 7: moveBackward(motorSpeed); turnLeft(); currentState = BACKWARD; break;
-            case 8: moveBackward(motorSpeed); turnRight(); currentState = BACKWARD; break;
+            case 3: turnLeft(255); currentState = TURNINGL; break; 
+            case 4: turnRight(255); currentState = TURNINGR; break;  
+            case 5: moveForward(motorSpeed); turnLeft(255); currentState = FORWARD; break;
+            case 6: moveForward(motorSpeed); turnRight(255); currentState = FORWARD; break;
+            case 7: moveBackward(motorSpeed); turnLeft(255); currentState = BACKWARD; break;
+            case 8: moveBackward(motorSpeed); turnRight(255); currentState = BACKWARD; break;
             case 10: motorSpeed = min(motorSpeed + 5, 255); Serial.print("Speed Increased: "); Serial.println(motorSpeed); break;
             case 11: motorSpeed = max(motorSpeed - 5, 200);  Serial.print("Speed Decreased: "); Serial.println(motorSpeed); break;
             case 0: stopAllMotors(); currentState = STOPPED; break;
@@ -437,5 +531,5 @@ void loop() {
     autonomousDrive();
     lastAutoDriveCheck = millis();
   }
-  delay(10);
+  delay(50);
 }
