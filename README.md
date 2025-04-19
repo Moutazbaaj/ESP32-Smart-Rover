@@ -90,7 +90,7 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 | OLED Display (Upcoming)| Display on controller                        |
 | 4x AA 1.5V Batteries   | Power supply    |
 | LM2596 DC to DC Buck Converter | to step down the current to 5V  |
-
+//update the motor driver
 ## Project Goals
 
 - Build a feature-rich, educational rover platform
