@@ -1,6 +1,6 @@
 # robot_Project
 
-a rover project
+smart rover project
 
 # Smart Rover with ESP32
 
