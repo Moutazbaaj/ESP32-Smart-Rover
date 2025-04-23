@@ -10,22 +10,6 @@
 #define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 
-/*
-// Motor pins
-#define IN1 18    // Rear Motor Forward
-#define IN2 19    // Rear Motor Backward
-#define IN3 16    // Front Motor Left
-#define IN4 17    // Front Motor Right
-*/
-
-/*
-// PWM channels
-#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
-#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
-#define PWM_FREQ  5000      // PWM frequency in Hz
-#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
-*/
-
 
 // Motor pins
 #define AIN1 18    // Rear Motor Forward
@@ -103,6 +87,7 @@ enum LEDPosition {
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
 
+
 Servo usServo;
 bool selfDrivingMode = false;
 unsigned long lastAutoDriveCheck = 0;
@@ -121,22 +106,12 @@ void setup() {
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(OE_PIN, OUTPUT);
   pinMode(MR_PIN, OUTPUT);
-  digitalWrite(OE_PIN, LOW);   // Enable outputs
+  digitalWrite(OE_PIN, LOW);    // Enable outputs
   digitalWrite(MR_PIN, HIGH);  // Disable reset
-  updateLEDs(0); 
-                // Clear all LEDs
-/*
+  updateLEDs(0);              // Clear all LEDs
+
+
   // Initialize motors
-  ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
-  //pinMode(IN1, OUTPUT);
-  //pinMode(IN2, OUTPUT);
-  pinMode(IN3, OUTPUT);
-  pinMode(IN4, OUTPUT);
-
-*/
-
-    // Initialize motors
   ledcAttach(PWM_CHANNEL_A, PWM_FREQ, PWM_RESOLUTION);
   ledcAttach(PWM_CHANNEL_B, PWM_FREQ, PWM_RESOLUTION);
   pinMode(AIN1, OUTPUT);
@@ -188,27 +163,50 @@ void setup() {
   }
 
   stopAllMotors();
-  //randomSeed(analogRead(0));
 }
 
 void ledControl() {
-  if (isLightsOn == true) {
-  if(currentState == FORWARD ) {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
-  } else if (currentState == TURNINGR) {
-    updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | */ FRONT_RIGHT_YELLOW /*| BACK_LEFT_YELLOW */| BACK_RIGHT_YELLOW);
-  } else if (currentState == TURNINGL) {
-    updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | */ FRONT_LEFT_YELLOW/* | FRONT_RIGHT_YELLOW */| BACK_LEFT_YELLOW /*| BACK_RIGHT_YELLOW*/);
-  } else if (currentState == BACKWARD) {
-    updateLEDs(/*FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |*/BACK_LEFT_RED | BACK_RIGHT_RED);
-  } else if (currentState == SCANNING) {
-    updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW);
-  } else if (currentState == STOPPED) {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
-  } else {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  if (!isLightsOn) return;
+
+  uint16_t leds = 0;
+
+  switch (currentState) {
+    case FORWARD:
+      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE;
+      break;
+
+    case TURNINGR:
+      leds = FRONT_RIGHT_YELLOW | BACK_RIGHT_YELLOW;
+      break;
+
+    case TURNINGL:
+      leds = FRONT_LEFT_YELLOW | BACK_LEFT_YELLOW;
+      break;
+
+    case BACKWARD:
+      leds = BACK_LEFT_RED | BACK_RIGHT_RED;
+      break;
+
+    case SCANNING:
+      leds = FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW;
+      break;
+
+    case STOPPED:
+      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE |
+             FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW |
+             BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |
+             BACK_LEFT_RED | BACK_RIGHT_RED;
+      break;
+
+    default:
+      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE |
+             FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW |
+             BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |
+             BACK_LEFT_RED | BACK_RIGHT_RED;
+      break;
   }
-  }
+
+  updateLEDs(leds);
 }
 
 // Shift Register LED Control
@@ -217,52 +215,6 @@ void updateLEDs(uint8_t pattern) {
   shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, pattern);
   digitalWrite(LATCH_PIN, HIGH);
 }
-
-/*
-// Motor control functions
-void moveForward(int speed) {
-  ledcWrite(PWM_CHANNEL_IN1, speed);  
-  ledcWrite(PWM_CHANNEL_IN2, 0);
-  currentState = FORWARD;
-  ledControl();
-  Serial.println("MOVING FORWARD");
-}
-
-void moveBackward(int speed){
-  ledcWrite(PWM_CHANNEL_IN1, 0);
-  ledcWrite(PWM_CHANNEL_IN2, speed);
-  currentState = BACKWARD; 
-  ledControl();
-  Serial.println("MOVING BACKWARD");
-}
-
-void turnLeft() {
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-  currentState = TURNINGL;
-  ledControl();
-  Serial.println("TURNING LEFT");
-}
-
-void turnRight() {
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-  currentState = TURNINGR;
-  ledControl();
-  Serial.println("TURNING RIGHT");
-}
-
-void stopAllMotors() {
-  ledcWrite(PWM_CHANNEL_IN1, 0);
-  ledcWrite(PWM_CHANNEL_IN2, 0);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
-  currentState = STOPPED;
-  ledControl();
-  Serial.println("STOPPED");
-}
-
-*/
 
 // Motor control functions
 void moveForward(int speed) {
@@ -533,3 +485,99 @@ void loop() {
   }
   delay(50);
 }
+
+/*
+void ledControl() {
+  if (isLightsOn == true) {
+  if(currentState == FORWARD ) {
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
+ // } else if (currentState == TURNINGR) {
+   // updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | */ FRONT_RIGHT_YELLOW /*| BACK_LEFT_YELLOW */| BACK_RIGHT_YELLOW);
+  //} else if (currentState == TURNINGL) {
+   // updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | */ FRONT_LEFT_YELLOW/* | FRONT_RIGHT_YELLOW */| BACK_LEFT_YELLOW /*| BACK_RIGHT_YELLOW*/);
+  //} else if (currentState == BACKWARD) {
+    //updateLEDs(/*FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |*/BACK_LEFT_RED | BACK_RIGHT_RED);
+  //} else if (currentState == SCANNING) {
+    //updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW);
+  //} else if (currentState == STOPPED) {
+   // updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  //} else {
+    //updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
+  //}
+  //}
+//}
+
+/*
+// Motor pins
+#define IN1 18    // Rear Motor Forward
+#define IN2 19    // Rear Motor Backward
+#define IN3 16    // Front Motor Left
+#define IN4 17    // Front Motor Right
+*/
+
+/*
+// PWM channels
+#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
+#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
+#define PWM_FREQ  5000      // PWM frequency in Hz
+#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
+*/
+
+
+/*
+  // Initialize motors
+  ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
+  //pinMode(IN1, OUTPUT);
+  //pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+*/
+
+
+/*
+// Motor control functions
+void moveForward(int speed) {
+  ledcWrite(PWM_CHANNEL_IN1, speed);  
+  ledcWrite(PWM_CHANNEL_IN2, 0);
+  currentState = FORWARD;
+  ledControl();
+  Serial.println("MOVING FORWARD");
+}
+
+void moveBackward(int speed){
+  ledcWrite(PWM_CHANNEL_IN1, 0);
+  ledcWrite(PWM_CHANNEL_IN2, speed);
+  currentState = BACKWARD; 
+  ledControl();
+  Serial.println("MOVING BACKWARD");
+}
+
+void turnLeft() {
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  currentState = TURNINGL;
+  ledControl();
+  Serial.println("TURNING LEFT");
+}
+
+void turnRight() {
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  currentState = TURNINGR;
+  ledControl();
+  Serial.println("TURNING RIGHT");
+}
+
+void stopAllMotors() {
+  ledcWrite(PWM_CHANNEL_IN1, 0);
+  ledcWrite(PWM_CHANNEL_IN2, 0);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  currentState = STOPPED;
+  ledControl();
+  Serial.println("STOPPED");
+}
+
+*/
