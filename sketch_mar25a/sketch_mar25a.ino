@@ -490,7 +490,7 @@ void loop() {
 void ledControl() {
   if (isLightsOn == true) {
   if(currentState == FORWARD ) {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*/);
+    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*///);
  // } else if (currentState == TURNINGR) {
    // updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | */ FRONT_RIGHT_YELLOW /*| BACK_LEFT_YELLOW */| BACK_RIGHT_YELLOW);
   //} else if (currentState == TURNINGL) {
