@@ -9,8 +9,8 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 
 #define BUTTON_FORWARD_PIN  12
 #define BUTTON_BACKWARD_PIN 13
-#define BUTTON_RIGHT_PIN     14
-#define BUTTON_LEFT_PIN    27
+#define BUTTON_RIGHT_PIN    27
+#define BUTTON_LEFT_PIN     14
 #define BUTTON_SP_UP        33
 #define BUTTON_SP_DW        32
 #define BUTTON_LIGHTS       35
@@ -36,6 +36,7 @@ typedef struct RoverStatus {
     char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
+    int motorSpeed;   // the PMW Motor speed 
 } RoverStatus;
 
 /*
@@ -157,38 +158,42 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         Serial.println(status.distanceCM);
         Serial.print("Angle: ");
         Serial.println(status.servoAngle);
+        Serial.print("Motor PWM: ");
+        Serial.println(status.motorSpeed);
 
         display.clearDisplay();
         display.setTextSize(1);
-        display.setCursor(30, 0);
+
+        // Title
+        display.setCursor(34, 0); // Centered title
         display.println("ROVER STATUS");
-        display.setTextSize(1);
 
-        // Show Action
+        // Line 1: Action
         display.setCursor(0, 12);
-        display.print("Action:");
+        display.print("Act:");
+        display.println(status.action);
 
-        display.setCursor(0, 22);
-        display.print(status.action);
-
-        display.setCursor(0, 32);
+        // Line 2: Distance & Angle
+        display.setCursor(0, 26);
         display.print("Distance:");
-
-        display.setCursor(0, 42);
         display.print(status.distanceCM);
-        display.println(" cm");
+        display.print(" cm");
 
-        display.setCursor(0, 54);
-        display.print("Angle:");
+        display.setCursor(0, 38);
+        display.print("Angle: ");
         display.print(status.servoAngle);
-        display.println("°");
+        display.print((char)247); // Degree symbol
+
+        // Line 3: PWM
+        display.setCursor(0, 50);
+        display.print("PWM: ");
+        display.print(status.motorSpeed);
 
         display.display();
     } else {
         Serial.println("Invalid data length, skipping...");
     }
 }
-
 
 void sendCommand(uint8_t command) {
   esp_now_send(roverMac, &command, sizeof(command));
