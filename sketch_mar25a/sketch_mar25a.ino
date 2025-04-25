@@ -96,6 +96,12 @@ unsigned long lastAutoDriveCheck = 0;
 // Light controll 
 bool isLightsOn = true;
 
+// Idel status
+unsigned long lastActiveTime = 0;
+unsigned long lastIdleReportTime = 0;
+const unsigned long IDLE_TIMEOUT = 2000;        // 2 seconds idle timeout
+const unsigned long IDLE_REPORT_INTERVAL = 5000; // Send idle update every 5 seconds
+
 void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
@@ -219,39 +225,60 @@ void updateLEDs(uint8_t pattern) {
 
 // Motor control functions
 void moveForward(int speed) {
+    lastActiveTime = millis();
   ledcWrite(PWM_CHANNEL_A, speed);  
   digitalWrite(AIN1, LOW);
   digitalWrite(AIN2, HIGH);
   currentState = FORWARD;
   ledControl();
   Serial.println("MOVING FORWARD");
+    if (!selfDrivingMode) {
+    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
+    sendRoverStatus("Manual Forward", distance, SERVO_CENTER, motorSpeed);
+  }
 }
 
 void moveBackward(int speed){
+    lastActiveTime = millis();
   ledcWrite(PWM_CHANNEL_A, speed);
   digitalWrite(AIN1, HIGH);
   digitalWrite(AIN2, LOW);
   currentState = BACKWARD; 
   ledControl();
   Serial.println("MOVING BACKWARD");
+      if (!selfDrivingMode) {
+    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
+    sendRoverStatus("Manual BACKWARD", distance, SERVO_CENTER, motorSpeed);
+  }
 }
 
 void turnLeft(int speed) {
+    lastActiveTime = millis();
   ledcWrite(PWM_CHANNEL_B, speed);  
   digitalWrite(BIN1, LOW);
   digitalWrite(BIN2, HIGH);
   currentState = TURNINGL;
   ledControl();
+  /*
   Serial.println("TURNING LEFT");
+        if (!selfDrivingMode) {
+    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
+    sendRoverStatus("Manual LEFT", distance, SERVO_CENTER, motorSpeed);
+  }*/
 }
 
 void turnRight(int speed) {
+    lastActiveTime = millis();
   ledcWrite(PWM_CHANNEL_B, speed); 
   digitalWrite(BIN1, HIGH);
   digitalWrite(BIN2, LOW);
   ledControl();
+  /*
   Serial.println("TURNING RIGHT");
-  Serial.println("TURNING RIGHT");
+        if (!selfDrivingMode) {
+    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
+    sendRoverStatus("Manual RIGHT", distance, SERVO_CENTER, motorSpeed);
+  } */
 }
 
 void stopAllMotors() {
@@ -264,6 +291,11 @@ void stopAllMotors() {
   currentState = STOPPED;
   ledControl();
   Serial.println("STOPPED");
+/*
+        if (!selfDrivingMode) {
+    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
+    sendRoverStatus("Rover is Idel", distance, SERVO_CENTER, 0); 
+  } */
 }
 
 // Ultrasonic distance measurement
@@ -485,11 +517,26 @@ void sendRoverStatus(const char* action, float distance, int angle, int motorSpe
 }
 
 void loop() {
-  
-  if (selfDrivingMode && millis() - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
+  unsigned long now = millis();
+
+  // Autonomous driving logic
+  if (selfDrivingMode && now - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
     autonomousDrive();
-    lastAutoDriveCheck = millis();
+    lastAutoDriveCheck = now;
   }
+
+  // Idle detection (only when NOT in self-driving mode)
+  if (!selfDrivingMode) {
+    if (currentState == STOPPED && (now - lastActiveTime > IDLE_TIMEOUT)) {
+      if (now - lastIdleReportTime > IDLE_REPORT_INTERVAL) {
+        float dist = getDistanceCM();  // Get current distance
+        sendRoverStatus("Idle", dist, SERVO_CENTER, 0); // Send idle status
+        Serial.println("Rover is idle - status sent.");
+        lastIdleReportTime = now;
+      }
+    }
+  }
+
   delay(50);
 }
 
