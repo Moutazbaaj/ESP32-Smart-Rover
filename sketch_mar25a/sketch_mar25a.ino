@@ -50,6 +50,7 @@ typedef struct RoverStatus {
     char action[20];  // Action description (e.g., "Turning Left")
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
+    int motorSpeed;   // the PMW Motor speed 
 } RoverStatus;
 
 // Navigation settings
@@ -277,22 +278,21 @@ float getDistanceCM() {
   return duration * 0.034 / 2;
 }
 
-void adjustSpeedBasedOnDistance(float distance) {
+int adjustSpeedBasedOnDistance(float distance) {
     int minSpeed = 200;  // Minimum motor speed (3.3V)
     int maxSpeed = 255;  // Maximum motor speed
-    
-    // Ensure distance is within the measurable range
-    if (distance < 50) distance = 50;  // Clamp to minimum safe distance
-    if (distance > 600) distance = 600;  // Clamp to max sensor range
 
-    // Map distance [50 cm, 600 cm] to speed [200, 255]
-    int motorSpeed = map(distance, 50, 600, minSpeed, maxSpeed);
+    // Clamp distance to a safe range
+    if (distance < 50) distance = 50;
+    if (distance > 400) distance = 400;
+
+    // Map distance to motor speed
+    int motorSpeed = map(distance, 50, 400, minSpeed, maxSpeed);
 
     Serial.print("Adjusted Speed: ");
     Serial.println(motorSpeed);
 
-    moveForward(motorSpeed);
-   //delay(1000);
+    return motorSpeed;
 }
 
 // Smooth servo movement
@@ -325,7 +325,7 @@ void scanEnvironment() {
     Serial.print(distance);
     Serial.println("cm");
     
-    sendRoverStatus("Scanning...", distance, angle);
+    sendRoverStatus("Scanning...", distance, angle, 0);
 
     if (distance > maxDistance && distance > MIN_CLEARANCE) {
       maxDistance = distance;
@@ -344,12 +344,12 @@ void scanEnvironment() {
   
 
   // Send decision update to controller
-  sendRoverStatus("Scanning Done", maxDistance, bestAngle);
+  sendRoverStatus("Scanning Done", maxDistance, bestAngle, 0);
 
   // Decision making
   if (bestAngle < 60) {
     Serial.println(">>> Hard left turn");
-    sendRoverStatus("Hard left turn", maxDistance, bestAngle);
+    sendRoverStatus("Hard left turn", maxDistance, bestAngle, 205);
     moveBackward(205);
     delay(800);
     turnLeft(255);
@@ -357,7 +357,7 @@ void scanEnvironment() {
   } 
   else if (bestAngle > 120) {
     Serial.println(">>> Hard right turn");
-    sendRoverStatus("Hard right turn", maxDistance, bestAngle);
+    sendRoverStatus("Hard right turn", maxDistance, bestAngle, 205);
     moveBackward(205);
     delay(800);
     turnRight(255);
@@ -365,7 +365,7 @@ void scanEnvironment() {
   }
   else if (bestAngle < 90) {
     Serial.println(">>> Slight left turn");
-     sendRoverStatus("Slight left turn", maxDistance, bestAngle);
+     sendRoverStatus("Slight left turn", maxDistance, bestAngle, 205);
     turnLeft(255);
     delay(800);
     moveForward(205);
@@ -373,7 +373,7 @@ void scanEnvironment() {
   }
   else if (bestAngle > 90) {
     Serial.println(">>> Slight right turn");
-    sendRoverStatus("Slight right turn", maxDistance, bestAngle);
+    sendRoverStatus("Slight right turn", maxDistance, bestAngle, 205);
     turnRight(255);
     delay(800);
     moveForward(205);
@@ -381,12 +381,17 @@ void scanEnvironment() {
   }
   else {
     Serial.println(">>> Path clear ahead");
-    sendRoverStatus("Path clear ahead", maxDistance, bestAngle);
+    int speed = adjustSpeedBasedOnDistance(maxDistance);
+    sendRoverStatus("Path clear ahead", maxDistance, bestAngle, speed);
+    moveForward(speed);
+
   }
+/*
+    int speed = adjustSpeedBasedOnDistance(maxDistance);
+    sendRoverStatus("Path clear ahead", maxDistance, bestAngle, speed);
+    moveForward(speed);
 
-   adjustSpeedBasedOnDistance(maxDistance);
-
-
+*/
 }
 
 // Autonomous navigation
@@ -401,7 +406,7 @@ void autonomousDrive() {
 
   if (distance < OBSTACLE_DISTANCE_CM || irObstacle) {
     Serial.println("! OBSTACLE DETECTED !");
-    sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER);
+    sendRoverStatus("Obstacle Detected", distance, SERVO_CENTER, 0);
     moveBackward(220);
     delay(400);
     stopAllMotors();
@@ -410,8 +415,9 @@ void autonomousDrive() {
     scanEnvironment();
     stopAllMotors();
   } else {
-    sendRoverStatus("Moving Forward", distance, SERVO_CENTER);
-    adjustSpeedBasedOnDistance(distance);
+    int speed = adjustSpeedBasedOnDistance(distance);
+    sendRoverStatus("Moving Forward", distance, SERVO_CENTER, speed);
+    moveForward(speed);
   }
 }
 
@@ -462,11 +468,12 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 }
 
 // Function to send data back to the controller
-void sendRoverStatus(const char* action, float distance, int angle) {
+void sendRoverStatus(const char* action, float distance, int angle, int motorSpeed) {
     RoverStatus status;
     strncpy(status.action, action, sizeof(status.action));
     status.distanceCM = distance;
     status.servoAngle = angle;
+    status.motorSpeed = motorSpeed;
     
     esp_err_t result = esp_now_send(controllerMac, (uint8_t*)&status, sizeof(status));
     if (result != ESP_OK) {
