@@ -9,8 +9,8 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 
 #define BUTTON_FORWARD_PIN  12
 #define BUTTON_BACKWARD_PIN 13
-#define BUTTON_LEFT_PIN     14
-#define BUTTON_RIGHT_PIN    27
+#define BUTTON_RIGHT_PIN     14
+#define BUTTON_LEFT_PIN    27
 #define BUTTON_SP_UP        33
 #define BUTTON_SP_DW        32
 #define BUTTON_LIGHTS       35
