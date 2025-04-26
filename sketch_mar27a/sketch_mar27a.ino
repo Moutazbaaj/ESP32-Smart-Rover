@@ -165,7 +165,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         display.setTextSize(1);
 
         // Title
-        display.setCursor(34, 0); // Centered title
+        display.setCursor(32, 0); // Centered title
         display.println("ROVER STATUS");
 
         // Line 1: Action
@@ -188,6 +188,12 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         display.setCursor(0, 50);
         display.print("PWM: ");
         display.print(status.motorSpeed);
+
+         display.setCursor(60, 50);
+        display.print("AutoM:");
+        display.print("OFF");
+
+        //display.print(status.motorSpeed);
 
         display.display();
     } else {
@@ -212,8 +218,8 @@ void loop() {
   bool right    = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
   bool up       = (digitalRead(BUTTON_SP_UP) == LOW);
   bool down     = (digitalRead(BUTTON_SP_DW) == LOW);
-  bool lights   = (digitalRead(BUTTON_LIGHTS == LOW));
-  bool anyPressed = forward || backward || left || right || up || down;
+  bool lights   = (digitalRead(BUTTON_LIGHTS) == LOW);
+  bool anyPressed = forward || backward || left || right || up || down || lights;
 
   // Self-driving combo detection (Left+Right)
   if (left && right && !comboActive) {

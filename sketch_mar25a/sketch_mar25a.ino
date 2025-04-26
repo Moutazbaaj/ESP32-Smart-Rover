@@ -65,7 +65,10 @@ const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
-// todo : send data if the rover is not in automde 
+unsigned long lastDistanceCheck = 0;
+const unsigned long DISTANCE_UPDATE_INTERVAL = 500; // check distance every 0.5s
+float currentDistance = 0.0;
+
 
 // Mototr speed
 int motorSpeed = 255;  // Default speed (0-255)
@@ -233,8 +236,7 @@ void moveForward(int speed) {
   ledControl();
   Serial.println("MOVING FORWARD");
     if (!selfDrivingMode) {
-    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
-    sendRoverStatus("Manual Forward", distance, SERVO_CENTER, motorSpeed);
+    sendRoverStatus("Manual Forward", currentDistance, SERVO_CENTER, motorSpeed);
   }
 }
 
@@ -247,8 +249,7 @@ void moveBackward(int speed){
   ledControl();
   Serial.println("MOVING BACKWARD");
       if (!selfDrivingMode) {
-    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
-    sendRoverStatus("Manual BACKWARD", distance, SERVO_CENTER, motorSpeed);
+    sendRoverStatus("Manual BACKWARD", currentDistance, SERVO_CENTER, motorSpeed);
   }
 }
 
@@ -262,8 +263,7 @@ void turnLeft(int speed) {
   /*
   Serial.println("TURNING LEFT");
         if (!selfDrivingMode) {
-    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
-    sendRoverStatus("Manual LEFT", distance, SERVO_CENTER, motorSpeed);
+    sendRoverStatus("Manual LEFT", currentDistance, SERVO_CENTER, motorSpeed);
   }*/
 }
 
@@ -276,8 +276,7 @@ void turnRight(int speed) {
   /*
   Serial.println("TURNING RIGHT");
         if (!selfDrivingMode) {
-    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
-    sendRoverStatus("Manual RIGHT", distance, SERVO_CENTER, motorSpeed);
+    sendRoverStatus("Manual RIGHT", currentDistance, SERVO_CENTER, motorSpeed);
   } */
 }
 
@@ -293,8 +292,7 @@ void stopAllMotors() {
   Serial.println("STOPPED");
 /*
         if (!selfDrivingMode) {
-    float distance = getDistanceCM();  // Optional: fetch distance for manual mode
-    sendRoverStatus("Rover is Idel", distance, SERVO_CENTER, 0); 
+    sendRoverStatus("Rover is Idel", currentDistance, SERVO_CENTER, 0); 
   } */
 }
 
@@ -523,6 +521,14 @@ void loop() {
   if (selfDrivingMode && now - lastAutoDriveCheck >= AUTO_DRIVE_INTERVAL) {
     autonomousDrive();
     lastAutoDriveCheck = now;
+  }
+
+  // Always update distance if NOT in self-driving mode
+  if (!selfDrivingMode && now - lastDistanceCheck >= DISTANCE_UPDATE_INTERVAL) {
+    currentDistance = getDistanceCM();  // Store to a global variable
+    lastDistanceCheck = now;
+    Serial.print("Distance (manual mode): ");
+    Serial.println(currentDistance);
   }
 
   // Idle detection (only when NOT in self-driving mode)
