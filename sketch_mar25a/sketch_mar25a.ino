@@ -51,6 +51,7 @@ typedef struct RoverStatus {
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
     int motorSpeed;   // the PMW Motor speed 
+    bool autoMode;    // Bool for auto mode status
 } RoverStatus;
 
 // Navigation settings
@@ -59,6 +60,7 @@ const int MIN_CLEARANCE = 35;         // Minimum acceptable clearance (cm)
 const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
 
 // Servo settings
+Servo usServo;
 const int SERVO_MIN = 0;
 const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
@@ -88,13 +90,11 @@ enum LEDPosition {
 };
 
 
-
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
 
-
-Servo usServo;
+// Selfe driving Setting
 bool selfDrivingMode = false;
 unsigned long lastAutoDriveCheck = 0;
 
@@ -460,14 +460,6 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       stopAllMotors();
       return;
     }
-/*
-    if (data[0] == 12) {  // Toggle Lights
-      isLightsOn = !isLightsOn;
-      Serial.print("Lights: ");
-      Serial.println(isLightsOn ? "ON" : "OFF");
-      return;
-    }
-*/
 
     if (selfDrivingMode) {
       Serial.println("(Ignoring - in self-driving mode)");
@@ -505,6 +497,7 @@ void sendRoverStatus(const char* action, float distance, int angle, int motorSpe
     status.distanceCM = distance;
     status.servoAngle = angle;
     status.motorSpeed = motorSpeed;
+    status.autoMode = selfDrivingMode; 
     
     esp_err_t result = esp_now_send(controllerMac, (uint8_t*)&status, sizeof(status));
     if (result != ESP_OK) {

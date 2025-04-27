@@ -37,6 +37,7 @@ typedef struct RoverStatus {
     float distanceCM; // Distance detected
     int servoAngle;   // Angle where clearance was found
     int motorSpeed;   // the PMW Motor speed 
+    bool autoMode;
 } RoverStatus;
 
 /*
@@ -190,10 +191,8 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         display.print(status.motorSpeed);
 
          display.setCursor(60, 50);
-        display.print("AutoM:");
-        display.print("OFF");
-
-        //display.print(status.motorSpeed);
+         display.print("AutoM:");
+         display.print(status.autoMode ? "ON " : "OFF");
 
         display.display();
     } else {
@@ -223,6 +222,10 @@ void loop() {
 
   // Self-driving combo detection (Left+Right)
   if (left && right && !comboActive) {
+    display.clearDisplay();
+    display.setCursor(2, 30);
+    display.print("HOLD 3s FOR AUTO MODE");
+    display.display();
     comboStartTime = millis();
     comboActive = true;
     Serial.println("Combo started (hold 3s for self-driving)");
@@ -266,7 +269,6 @@ void loop() {
     else if (right)  newCommand = 4;
     else if (up)     newCommand = 10;
     else if (down)   newCommand = 11;
-    //else if  servo) newCommand = 12;
 
     // Handle command transitions
     if (isCombo) {
