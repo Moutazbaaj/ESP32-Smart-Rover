@@ -233,12 +233,13 @@ void moveForward(int speed) {
   ledcWrite(PWM_CHANNEL_A, speed);  
   digitalWrite(AIN1, LOW);
   digitalWrite(AIN2, HIGH);
-  currentState = FORWARD;
-  ledControl();
+ // currentState = FORWARD;
+ // ledControl();
   Serial.println("MOVING FORWARD");
+  /*
     if (!selfDrivingMode) {
     sendRoverStatus("Manual Forward", currentDistance, SERVO_CENTER, motorSpeed);
-  }
+  }*/
 }
 
 void moveBackward(int speed){
@@ -246,36 +247,39 @@ void moveBackward(int speed){
   ledcWrite(PWM_CHANNEL_A, speed);
   digitalWrite(AIN1, HIGH);
   digitalWrite(AIN2, LOW);
-  currentState = BACKWARD; 
-  ledControl();
+ // currentState = BACKWARD; 
+ // ledControl();
   Serial.println("MOVING BACKWARD");
+  /*
       if (!selfDrivingMode) {
     sendRoverStatus("Manual BACKWARD", currentDistance, SERVO_CENTER, motorSpeed);
-  }
-}
-
-void turnLeft(int speed) {
-    lastActiveTime = millis();
-  ledcWrite(PWM_CHANNEL_B, speed);  
-  digitalWrite(BIN1, LOW);
-  digitalWrite(BIN2, HIGH);
-  currentState = TURNINGL;
-  ledControl();
-  /*
-  Serial.println("TURNING LEFT");
-        if (!selfDrivingMode) {
-    sendRoverStatus("Manual LEFT", currentDistance, SERVO_CENTER, motorSpeed);
   }*/
 }
 
 void turnRight(int speed) {
     lastActiveTime = millis();
+  ledcWrite(PWM_CHANNEL_B, speed);  
+  digitalWrite(BIN1, LOW);
+  digitalWrite(BIN2, HIGH);
+  //currentState = TURNINGL;
+ // ledControl();
+  
+  Serial.println("TURNING RIGHT");
+  /*
+        if (!selfDrivingMode) {
+    sendRoverStatus("Manual LEFT", currentDistance, SERVO_CENTER, motorSpeed);
+  }*/
+}
+
+void turnLeft(int speed) {
+    lastActiveTime = millis();
   ledcWrite(PWM_CHANNEL_B, speed); 
   digitalWrite(BIN1, HIGH);
   digitalWrite(BIN2, LOW);
-  ledControl();
+  //ledControl();
+  
+  Serial.println("TURNING LEFT");
   /*
-  Serial.println("TURNING RIGHT");
         if (!selfDrivingMode) {
     sendRoverStatus("Manual RIGHT", currentDistance, SERVO_CENTER, motorSpeed);
   } */
@@ -288,7 +292,7 @@ void stopAllMotors() {
   digitalWrite(AIN2, LOW);
   digitalWrite(BIN1, LOW);
   digitalWrite(BIN2, LOW);
-  currentState = STOPPED;
+ // currentState = STOPPED;
   ledControl();
   Serial.println("STOPPED");
 
@@ -414,12 +418,6 @@ void scanEnvironment() {
     moveForward(speed);
 
   }
-/*
-    int speed = adjustSpeedBasedOnDistance(maxDistance);
-    sendRoverStatus("Path clear ahead", maxDistance, bestAngle, speed);
-    moveForward(speed);
-
-*/
 }
 
 // Autonomous navigation
@@ -479,17 +477,17 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
     //stopAllMotors();
 
         switch (data[0]) {
-            case 1: moveForward(motorSpeed); currentState = FORWARD; break;
-            case 2: moveBackward(motorSpeed); currentState = BACKWARD; break;
-            case 3: turnLeft(255); currentState = TURNINGL; break; 
-            case 4: turnRight(255); currentState = TURNINGR; break;  
-            case 5: moveForward(motorSpeed); turnLeft(255); currentState = FORWARD; break;
-            case 6: moveForward(motorSpeed); turnRight(255); currentState = FORWARD; break;
-            case 7: moveBackward(motorSpeed); turnLeft(255); currentState = BACKWARD; break;
-            case 8: moveBackward(motorSpeed); turnRight(255); currentState = BACKWARD; break;
+            case 1: moveForward(motorSpeed); currentState = FORWARD; sendRoverStatus("Manual FORWARD", currentDistance, SERVO_CENTER, motorSpeed);  break;
+            case 2: moveBackward(motorSpeed); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 3: turnRight(255); currentState = TURNINGR; sendRoverStatus("Manual TURNING R", currentDistance, SERVO_CENTER, motorSpeed); break;  
+            case 4: turnLeft(255); currentState = TURNINGL; sendRoverStatus("Manual TURNING L", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 5: moveForward(motorSpeed); turnRight(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD R", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 6: moveForward(motorSpeed); turnLeft(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD L", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 7: moveBackward(motorSpeed); turnRight(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD R", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 8: moveBackward(motorSpeed); turnLeft(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD L", currentDistance, SERVO_CENTER, motorSpeed); break;
             case 10: motorSpeed = min(motorSpeed + 5, 255); Serial.print("Speed Increased: "); Serial.println(motorSpeed); break;
             case 11: motorSpeed = max(motorSpeed - 5, 200);  Serial.print("Speed Decreased: "); Serial.println(motorSpeed); break;
-            case 0: stopAllMotors(); currentState = STOPPED; break;
+            case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0); break;
         }
 
   }
@@ -528,23 +526,7 @@ void loop() {
     currentDistance = getDistanceCM();  // Store to a global variable
     Serial.print("Distance (manual mode): ");
     Serial.println(currentDistance);
-        
-      if (currentState == STOPPED) {
-      sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0);
-    }
-    
   }
-/*
-  // Idle detection (only when NOT in self-driving mode)
-  if (!selfDrivingMode) {
-    if (currentState == STOPPED && (now - lastActiveTime > IDLE_TIMEOUT)) {
-      if (now - lastIdleReportTime > IDLE_REPORT_INTERVAL) {
-        sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0); // Send idle status
-        Serial.println("Rover is idle - status sent.");
-        lastIdleReportTime = now;
-      }
-    }
-  }*/
 
   delay(50);
 }
