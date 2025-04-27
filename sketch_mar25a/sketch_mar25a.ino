@@ -21,7 +21,7 @@
 
 // PWM Pins
 #define PWMA 21   // Rear Motor
-#define PWMB 22 // Front Motor
+//#define PWMB 22 // Front Motor
 
 
 // PWM channels
@@ -65,6 +65,7 @@ const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
 
+// Ultrasonic settings
 unsigned long lastDistanceCheck = 0;
 const unsigned long DISTANCE_UPDATE_INTERVAL = 500; // check distance every 0.5s
 float currentDistance = 0.0;
@@ -102,8 +103,8 @@ bool isLightsOn = true;
 // Idel status
 unsigned long lastActiveTime = 0;
 unsigned long lastIdleReportTime = 0;
-const unsigned long IDLE_TIMEOUT = 2000;        // 2 seconds idle timeout
-const unsigned long IDLE_REPORT_INTERVAL = 5000; // Send idle update every 5 seconds
+const unsigned long IDLE_TIMEOUT = 20;        // 2 seconds idle timeout
+const unsigned long IDLE_REPORT_INTERVAL = 50; // Send idle update every 5 seconds
 
 void setup() {
   Serial.begin(115200);
@@ -176,7 +177,7 @@ void setup() {
 }
 
 void ledControl() {
-  if (!isLightsOn) return;
+  if (isLightsOn = false) return;
 
   uint16_t leds = 0;
 
@@ -290,10 +291,7 @@ void stopAllMotors() {
   currentState = STOPPED;
   ledControl();
   Serial.println("STOPPED");
-/*
-        if (!selfDrivingMode) {
-    sendRoverStatus("Rover is Idel", currentDistance, SERVO_CENTER, 0); 
-  } */
+
 }
 
 // Ultrasonic distance measurement
@@ -523,121 +521,30 @@ void loop() {
     lastAutoDriveCheck = now;
   }
 
+
   // Always update distance if NOT in self-driving mode
   if (!selfDrivingMode && now - lastDistanceCheck >= DISTANCE_UPDATE_INTERVAL) {
-    currentDistance = getDistanceCM();  // Store to a global variable
     lastDistanceCheck = now;
+    currentDistance = getDistanceCM();  // Store to a global variable
     Serial.print("Distance (manual mode): ");
     Serial.println(currentDistance);
+        
+      if (currentState == STOPPED) {
+      sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0);
+    }
+    
   }
-
+/*
   // Idle detection (only when NOT in self-driving mode)
   if (!selfDrivingMode) {
     if (currentState == STOPPED && (now - lastActiveTime > IDLE_TIMEOUT)) {
       if (now - lastIdleReportTime > IDLE_REPORT_INTERVAL) {
-        float dist = getDistanceCM();  // Get current distance
-        sendRoverStatus("Idle", dist, SERVO_CENTER, 0); // Send idle status
+        sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0); // Send idle status
         Serial.println("Rover is idle - status sent.");
         lastIdleReportTime = now;
       }
     }
-  }
+  }*/
 
   delay(50);
 }
-
-/*
-void ledControl() {
-  if (isLightsOn == true) {
-  if(currentState == FORWARD ) {
-    updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE /*| FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW*///);
- // } else if (currentState == TURNINGR) {
-   // updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | */ FRONT_RIGHT_YELLOW /*| BACK_LEFT_YELLOW */| BACK_RIGHT_YELLOW);
-  //} else if (currentState == TURNINGL) {
-   // updateLEDs(/*FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | */ FRONT_LEFT_YELLOW/* | FRONT_RIGHT_YELLOW */| BACK_LEFT_YELLOW /*| BACK_RIGHT_YELLOW*/);
-  //} else if (currentState == BACKWARD) {
-    //updateLEDs(/*FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |*/BACK_LEFT_RED | BACK_RIGHT_RED);
-  //} else if (currentState == SCANNING) {
-    //updateLEDs( BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW);
-  //} else if (currentState == STOPPED) {
-   // updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
-  //} else {
-    //updateLEDs(FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE | FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW | BACK_LEFT_RED | BACK_RIGHT_RED);
-  //}
-  //}
-//}
-
-/*
-// Motor pins
-#define IN1 18    // Rear Motor Forward
-#define IN2 19    // Rear Motor Backward
-#define IN3 16    // Front Motor Left
-#define IN4 17    // Front Motor Right
-*/
-
-/*
-// PWM channels
-#define PWM_CHANNEL_IN1  18  // Channel 2 for IN1
-#define PWM_CHANNEL_IN2  19  // Channel 0 for IN2
-#define PWM_FREQ  5000      // PWM frequency in Hz
-#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
-*/
-
-
-/*
-  // Initialize motors
-  ledcAttach(IN1, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttach(IN2, PWM_FREQ, PWM_RESOLUTION);
-  //pinMode(IN1, OUTPUT);
-  //pinMode(IN2, OUTPUT);
-  pinMode(IN3, OUTPUT);
-  pinMode(IN4, OUTPUT);
-
-*/
-
-
-/*
-// Motor control functions
-void moveForward(int speed) {
-  ledcWrite(PWM_CHANNEL_IN1, speed);  
-  ledcWrite(PWM_CHANNEL_IN2, 0);
-  currentState = FORWARD;
-  ledControl();
-  Serial.println("MOVING FORWARD");
-}
-
-void moveBackward(int speed){
-  ledcWrite(PWM_CHANNEL_IN1, 0);
-  ledcWrite(PWM_CHANNEL_IN2, speed);
-  currentState = BACKWARD; 
-  ledControl();
-  Serial.println("MOVING BACKWARD");
-}
-
-void turnLeft() {
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-  currentState = TURNINGL;
-  ledControl();
-  Serial.println("TURNING LEFT");
-}
-
-void turnRight() {
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-  currentState = TURNINGR;
-  ledControl();
-  Serial.println("TURNING RIGHT");
-}
-
-void stopAllMotors() {
-  ledcWrite(PWM_CHANNEL_IN1, 0);
-  ledcWrite(PWM_CHANNEL_IN2, 0);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
-  currentState = STOPPED;
-  ledControl();
-  Serial.println("STOPPED");
-}
-
-*/
