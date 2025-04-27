@@ -21,7 +21,7 @@
 
 // PWM Pins
 #define PWMA 21   // Rear Motor
-//#define PWMB 22 // Front Motor
+#define PWMB 22 // Front Motor
 
 
 // PWM channels
@@ -64,6 +64,7 @@ const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
 const int SCAN_STEP = 5;              // Degrees per step
+int currentServoAngle = SERVO_CENTER; // Tracks current servo position
 
 // Ultrasonic settings
 unsigned long lastDistanceCheck = 0;
@@ -329,12 +330,11 @@ int adjustSpeedBasedOnDistance(float distance) {
 
 // Smooth servo movement
 void smoothServoMove(int targetAngle) {
-  static int currentPos = SERVO_CENTER;
   targetAngle = constrain(targetAngle, SERVO_MIN, SERVO_MAX);
   
-  while (currentPos != targetAngle) {
-    currentPos += (targetAngle > currentPos) ? 1 : -1;
-    usServo.write(currentPos);
+  while (currentServoAngle != targetAngle) {
+    currentServoAngle += (targetAngle > currentServoAngle) ? 1 : -1;
+    usServo.write(currentServoAngle);
     delay(SERVO_SPEED);
   }
 }
@@ -460,14 +460,14 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
       stopAllMotors();
       return;
     }
-
+/*
     if (data[0] == 12) {  // Toggle Lights
       isLightsOn = !isLightsOn;
       Serial.print("Lights: ");
       Serial.println(isLightsOn ? "ON" : "OFF");
       return;
     }
-
+*/
 
     if (selfDrivingMode) {
       Serial.println("(Ignoring - in self-driving mode)");
@@ -477,17 +477,22 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
     //stopAllMotors();
 
         switch (data[0]) {
-            case 1: moveForward(motorSpeed); currentState = FORWARD; sendRoverStatus("Manual FORWARD", currentDistance, SERVO_CENTER, motorSpeed);  break;
-            case 2: moveBackward(motorSpeed); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD", currentDistance, SERVO_CENTER, motorSpeed); break;
-            case 3: turnRight(255); currentState = TURNINGR; sendRoverStatus("Manual TURNING R", currentDistance, SERVO_CENTER, motorSpeed); break;  
-            case 4: turnLeft(255); currentState = TURNINGL; sendRoverStatus("Manual TURNING L", currentDistance, SERVO_CENTER, motorSpeed); break;
-            case 5: moveForward(motorSpeed); turnRight(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD R", currentDistance, SERVO_CENTER, motorSpeed); break;
-            case 6: moveForward(motorSpeed); turnLeft(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD L", currentDistance, SERVO_CENTER, motorSpeed); break;
-            case 7: moveBackward(motorSpeed); turnRight(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD R", currentDistance, SERVO_CENTER, motorSpeed); break;
-            case 8: moveBackward(motorSpeed); turnLeft(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD L", currentDistance, SERVO_CENTER, motorSpeed); break;
+            case 1: moveForward(motorSpeed); currentState = FORWARD; sendRoverStatus("Manual FORWARD", currentDistance, currentServoAngle, motorSpeed);  break;
+            case 2: moveBackward(motorSpeed); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD", currentDistance, currentServoAngle, motorSpeed); break;
+            case 3: turnRight(255); currentState = TURNINGR; sendRoverStatus("Manual TURNING R", currentDistance, currentServoAngle, motorSpeed); break;  
+            case 4: turnLeft(255); currentState = TURNINGL; sendRoverStatus("Manual TURNING L", currentDistance, currentServoAngle, motorSpeed); break;
+            case 5: moveForward(motorSpeed); turnRight(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD R", currentDistance, currentServoAngle, motorSpeed); break;
+            case 6: moveForward(motorSpeed); turnLeft(255); currentState = FORWARD; sendRoverStatus("Manual FORWARD L", currentDistance, currentServoAngle, motorSpeed); break;
+            case 7: moveBackward(motorSpeed); turnRight(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD R", currentDistance, currentServoAngle, motorSpeed); break;
+            case 8: moveBackward(motorSpeed); turnLeft(255); currentState = BACKWARD; sendRoverStatus("Manual BACKWARD L", currentDistance, currentServoAngle, motorSpeed); break;
             case 10: motorSpeed = min(motorSpeed + 5, 255); Serial.print("Speed Increased: "); Serial.println(motorSpeed); break;
             case 11: motorSpeed = max(motorSpeed - 5, 200);  Serial.print("Speed Decreased: "); Serial.println(motorSpeed); break;
-            case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0); break;
+            case 12: currentServoAngle = SERVO_CENTER; usServo.write(currentServoAngle); sendRoverStatus("Center Servo", currentDistance, currentServoAngle, 0); break; 
+            case 13:currentServoAngle -= 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
+            sendRoverStatus("Scaning Right", currentDistance, currentServoAngle, 0); break;
+            case 14:currentServoAngle += 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
+            sendRoverStatus("Scaning Left", currentDistance, currentServoAngle, 0); break;
+            case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentServoAngle, currentServoAngle, 0); break;
         }
 
   }
@@ -528,7 +533,7 @@ void loop() {
     Serial.println(currentDistance);
         
       if (currentState == STOPPED) {
-      sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0);
+      sendRoverStatus("Idle", currentDistance, currentServoAngle, 0);
     }
     
   }
