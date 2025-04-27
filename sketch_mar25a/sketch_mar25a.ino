@@ -526,7 +526,14 @@ void loop() {
     currentDistance = getDistanceCM();  // Store to a global variable
     Serial.print("Distance (manual mode): ");
     Serial.println(currentDistance);
+        
+      if (currentState == STOPPED) {
+      sendRoverStatus("Idle", currentDistance, SERVO_CENTER, 0);
+    }
+    
   }
+
+
 
   delay(50);
 }
