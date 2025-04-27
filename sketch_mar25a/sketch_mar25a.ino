@@ -455,6 +455,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
 
     if (data[0] == 9) {  // Toggle autonomous mode
       selfDrivingMode = !selfDrivingMode;
+      sendRoverStatus(selfDrivingMode ? "AUTO ENABLED" : "Idel", currentDistance, SERVO_CENTER, 0);
       Serial.print("Self-Driving Mode: ");
       Serial.println(selfDrivingMode ? "ON" : "OFF");
       stopAllMotors();

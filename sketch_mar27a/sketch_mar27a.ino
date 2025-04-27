@@ -40,59 +40,6 @@ typedef struct RoverStatus {
     bool autoMode;
 } RoverStatus;
 
-/*
-// Pixel Art
-// Car Icon (16x16)
-static const unsigned char car_icon[] PROGMEM = {
-  0b00000000, 0b00000000,
-  0b00001110, 0b00000000,
-  0b00011111, 0b10000000,
-  0b00111111, 0b11000000,
-  0b01111111, 0b11100000,
-  0b01110111, 0b10100000,
-  0b01111111, 0b11100000,
-  0b01111111, 0b11100000,
-  0b01110111, 0b10100000,
-  0b00111111, 0b11000000,
-  0b00011111, 0b10000000,
-  0b00001110, 0b00000000,
-  0b00000000, 0b00000000
-};
-
-// Left Arrow
-static const unsigned char left_arrow[] PROGMEM = {
-  0b00011000,
-  0b00111000,
-  0b01111000,
-  0b11111000,
-  0b01111000,
-  0b00111000,
-  0b00011000
-};
-
-// Right Arrow (Mirrored Left Arrow)
-static const unsigned char right_arrow[] PROGMEM = {
-  0b00011000,
-  0b00011100,
-  0b00011110,
-  0b00011111,
-  0b00011110,
-  0b00011100,
-  0b00011000
-};
-
-// Warning Icon
-static const unsigned char warning_icon[] PROGMEM = {
-  0b00011000,
-  0b00111100,
-  0b01111110,
-  0b01111110,
-  0b01111110,
-  0b00111100,
-  0b00011000
-};
-*/
-
 void setup() {
   Serial.begin(115200);
   Serial.println("===== CONTROLLER (Direction Fixed) =====");
@@ -146,6 +93,7 @@ void setup() {
 }
 
 void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int len) {
+  if (comboActive) return; 
     Serial.print("Data received, length: ");
     Serial.println(len);
     
@@ -190,7 +138,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
         display.print("PWM: ");
         display.print(status.motorSpeed);
 
-         display.setCursor(60, 50);
+         display.setCursor(66, 50);
          display.print("AutoM:");
          display.print(status.autoMode ? "ON " : "OFF");
 
@@ -222,6 +170,7 @@ void loop() {
 
   // Self-driving combo detection (Left+Right)
   if (left && right && !comboActive) {
+  
     display.clearDisplay();
     display.setCursor(2, 30);
     display.print("HOLD 3s FOR AUTO MODE");
@@ -229,6 +178,7 @@ void loop() {
     comboStartTime = millis();
     comboActive = true;
     Serial.println("Combo started (hold 3s for self-driving)");
+    
   } 
   else if (!left || !right) {
     comboActive = false;
