@@ -13,7 +13,7 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4};
 #define BUTTON_LEFT_PIN     14
 #define BUTTON_SP_UP        33
 #define BUTTON_SP_DW        32
-#define BUTTON_LIGHTS       35
+#define BUTTON_LIGHTS       17
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -211,7 +211,96 @@ void sendCommand(uint8_t command) {
 void loop() {
   static uint8_t lastSentCommand = 0;
   static bool comboWasActive = false;
-  
+
+  bool forward  = (digitalRead(BUTTON_FORWARD_PIN) == LOW);
+  bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
+  bool left     = (digitalRead(BUTTON_LEFT_PIN) == LOW);
+  bool right    = (digitalRead(BUTTON_RIGHT_PIN) == LOW);
+  bool up       = (digitalRead(BUTTON_SP_UP) == LOW);
+  bool down     = (digitalRead(BUTTON_SP_DW) == LOW);
+  bool lights   = (digitalRead(BUTTON_LIGHTS) == LOW);
+  bool anyPressed = forward || backward || left || right || up || down || lights;
+
+  // Self-driving combo detection (Left+Right)
+  if (left && right && !comboActive) {
+    comboStartTime = millis();
+    comboActive = true;
+    Serial.println("Combo started (hold 3s for self-driving)");
+  } 
+  else if (!left || !right) {
+    comboActive = false;
+  }
+
+  // Handle self-driving activation
+  if (comboActive && (millis() - comboStartTime >= COMBO_DURATION)) {
+    sendCommand(9);
+    comboActive = false;
+    comboWasActive = true;
+    Serial.println("SELF-DRIVING MODE ACTIVATED!");
+    delay(1000);
+    return;
+  } 
+
+  // Main command logic
+  if (!comboActive && (millis() - lastDebounceTime > DEBOUNCE_DELAY)) {
+    uint8_t newCommand = 0;
+    bool isCombo = false;
+
+    // Determine new command
+    if (forward) {
+      if (left)      { newCommand = 5; isCombo = true; }
+      else if (right) { newCommand = 6; isCombo = true; }
+      else           newCommand = 1;
+    } 
+    else if (backward) {
+      if (left)      { newCommand = 7; isCombo = true; }
+      else if (right) { newCommand = 8; isCombo = true; }
+      else           newCommand = 2;
+    } 
+    else if (left)   newCommand = 3;
+    else if (right)  newCommand = 4;
+    else if (up)     newCommand = 10;
+    else if (down)   newCommand = 11;
+    else if (lights) newCommand = 12;
+
+    // Handle command transitions
+    if (isCombo) {
+      // Case 1: Combo command (5-8)
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = true;
+    } 
+    else if (comboWasActive && anyPressed) {
+      // Case 2: Transition from combo to normal command
+      sendCommand(0);
+      delay(5);
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = false;
+    }
+    else if (anyPressed && (newCommand != lastSentCommand || (newCommand >= 1 && newCommand <= 4))) {
+      // Case 3: Normal command change or repeating 1-4
+      sendCommand(newCommand);
+      lastSentCommand = newCommand;
+      comboWasActive = false;
+    }
+    else if (!anyPressed && lastSentCommand != 0) {
+      // Case 4: All buttons released
+      sendCommand(0);
+      lastSentCommand = 0;
+      comboWasActive = false;
+    }
+
+    lastDebounceTime = millis();
+  }
+  delay(10);
+}
+
+/*
+void loop() {
+  static uint8_t lastSentCommand = 0;
+  static bool comboWasActive = false;
+
   bool forward  = (digitalRead(BUTTON_FORWARD_PIN) == LOW);
   bool backward = (digitalRead(BUTTON_BACKWARD_PIN) == LOW);
   bool left     = (digitalRead(BUTTON_LEFT_PIN) == LOW);
@@ -258,10 +347,10 @@ void loop() {
       else if (right) { newCommand = 8; isCombo = true; }
       else           newCommand = 2;
     } 
-    else if (left)  newCommand = 3;
-    else if (right) newCommand = 4;
-    else if (up)    newCommand = 10;
-    else if (down)  newCommand = 11;
+    else if (left)   newCommand = 3;
+    else if (right)  newCommand = 4;
+    else if (up)     newCommand = 10;
+    else if (down)   newCommand = 11;
     else if (lights) newCommand = 12;
 
     // Handle command transitions
@@ -296,3 +385,4 @@ void loop() {
   }
   delay(10);
 }
+*/
