@@ -2,14 +2,14 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
 #include <EEPROM.h>
-
+/*
 // Shift Register Pins
 #define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
 #define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
-#define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK)
+#define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK) //
 #define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
-
+*/
 
 // Motor pins
 #define AIN1 18    // Rear Motor Forward
@@ -39,7 +39,7 @@
 #define SERVO_PIN 26
 
 // KY-032
-#define OBSTACLE_PIN 0 //22
+#define OBSTACLE_PIN 5 //22
 
 
  
@@ -111,7 +111,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
 
-
+/*
   // Initialize shift register
   pinMode(DATA_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
@@ -121,7 +121,7 @@ void setup() {
   digitalWrite(OE_PIN, LOW);    // Enable outputs
   digitalWrite(MR_PIN, HIGH);  // Disable reset
   updateLEDs(0);              // Clear all LEDs
-
+*/
 
   // Initialize motors
   ledcAttach(PWM_CHANNEL_A, PWM_FREQ, PWM_RESOLUTION);
@@ -177,6 +177,7 @@ void setup() {
   stopAllMotors();
 }
 
+/*
 void ledControl() {
   if (isLightsOn = false) return;
 
@@ -220,14 +221,15 @@ void ledControl() {
 
   updateLEDs(leds);
 }
-
+*/
+/*
 // Shift Register LED Control
 void updateLEDs(uint8_t pattern) {
   digitalWrite(LATCH_PIN, LOW);
   shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, pattern);
   digitalWrite(LATCH_PIN, HIGH);
 }
-
+*/
 // Motor control functions
 void moveForward(int speed) {
     lastActiveTime = millis();
@@ -294,7 +296,7 @@ void stopAllMotors() {
   digitalWrite(BIN1, LOW);
   digitalWrite(BIN2, LOW);
  // currentState = STOPPED;
-  ledControl();
+ // ledControl();
   Serial.println("STOPPED");
 
 }
@@ -437,7 +439,7 @@ void autonomousDrive() {
     delay(400);
     stopAllMotors();
     currentState = SCANNING;
-    ledControl();
+    //ledControl();
     scanEnvironment();
     stopAllMotors();
   } else {
@@ -485,7 +487,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
             sendRoverStatus("Scaning Right", currentDistance, currentServoAngle, 0); break;
             case 14:currentServoAngle += 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
             sendRoverStatus("Scaning Left", currentDistance, currentServoAngle, 0); break;
-            case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentServoAngle, currentServoAngle, 0); break;
+            case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentDistance, currentServoAngle, 0); break;
         }
 
   }
