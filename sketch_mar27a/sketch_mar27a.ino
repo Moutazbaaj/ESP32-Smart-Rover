@@ -211,14 +211,14 @@ void loop() {
       else           newCommand = 2;
     }
     else if  (servo) {
-      if (up)         { newCommand = 13; isCombo = true; }
-      else if (down)  { newCommand = 14; isCombo = true; }
+      if (up)         { newCommand = 10; isCombo = true; }
+      else if (down)  { newCommand = 11; isCombo = true; }
       else            newCommand = 12;
     } 
     else if (left)   newCommand = 3;
     else if (right)  newCommand = 4;
-    else if (up)     newCommand = 10;
-    else if (down)   newCommand = 11;
+    else if (up)     newCommand = 13;
+    else if (down)   newCommand = 14;
 
     // Handle command transitions
     if (isCombo) {
@@ -235,7 +235,7 @@ void loop() {
       lastSentCommand = newCommand;
       comboWasActive = false;
     }
-    else if (anyPressed && (newCommand != lastSentCommand || (newCommand >= 1 && newCommand <= 4))) {
+    else if (anyPressed && (newCommand != lastSentCommand || (newCommand >= 1 && newCommand <= 4 || newCommand == 13 || newCommand ==14 ))) {
       // Case 3: Normal command change or repeating 1-4
       sendCommand(newCommand);
       lastSentCommand = newCommand;
