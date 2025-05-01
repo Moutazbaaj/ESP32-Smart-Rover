@@ -45,7 +45,7 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 - Real-time tracking of orientation, angle, and movement
 - Enhances autonomous mode decisions
 
-### ✅ OLED Display on Controller (Upcoming)
+### ✅ OLED Display on Controller
 - Displays:
   - Direction of movement
   - Angle and position of the rover
@@ -59,8 +59,8 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 - [x] Ultrasonic Sensor with Servo
 - [x] LED Indicators with Shift Register
 - [ ] Gyroscope + Orientation Module//
-- [ ] OLED Display Integration
-- [ ] Solar system
+- [x] OLED Display Integration
+- [x] Solar system
 
 ## How It Works
 
