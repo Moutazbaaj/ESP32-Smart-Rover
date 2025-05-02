@@ -11,6 +11,10 @@
 #define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
 */
 
+// LED pin 
+#define LED 12
+
+
 // Motor pins
 #define AIN1 18    // Rear Motor Forward
 #define AIN2 19    // Rear Motor Backward
