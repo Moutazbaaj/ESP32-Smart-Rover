@@ -59,7 +59,7 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 - [x] Ultrasonic Sensor with Servo
 - [x] LED Indicators with Shift Register
 - [ ] Gyroscope + Orientation Module//
-- [x] OLED Display Integration
+- [x] OLED Display
 - [x] Solar system
 
 ## How It Works
@@ -80,17 +80,17 @@ This is an open-source Smart Rover project built with ESP32 microcontrollers. Th
 | Component              | Description                                   |
 |------------------------|-----------------------------------------------|
 | ESP32 (x2)             | One for the rover, one for the controller     |
-| L298N Motor Driver     | Dual DC motor control                         |
+| LTB6612 Motor Driver     | H-Bridge Dual DC motor control                         |
 | DC Motors (x2)         | One for movement, one for steering            |
 | Ultrasonic Sensor      | Distance detection for obstacle avoidance     |
 | Servo Motor            | Mounted ultrasonic for dynamic scanning       |
 | SN74HC595              | Shift register for LED control                |
 | LEDs (White, Red, Yellow) | Indication system                         |
 | GY-BNO055 (Upcoming)   | Gyroscope & Accelerometer                     |
-| OLED Display (Upcoming)| Display on controller                        |
+| OLED Display | Display on controller                        |
 | 4x AA 1.5V Batteries   | Power supply    |
 | LM2596 DC to DC Buck Converter | to step down the current to 5V  |
-//update the motor driver
+
 ## Project Goals
 
 - Build a feature-rich, educational rover platform
