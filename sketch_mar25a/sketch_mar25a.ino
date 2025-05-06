@@ -15,7 +15,6 @@
 // LED pin 
 #define LED_PIN 12
 #define LED_COUNT 8
-CRGB leds[LED_COUNT];
 
 // Motor pins
 #define AIN1 18    // Rear Motor Forward
@@ -106,6 +105,7 @@ bool selfDrivingMode = false;
 unsigned long lastAutoDriveCheck = 0;
 
 // Light controll 
+CRGB leds[LED_COUNT];
 bool isLightsOn = true;
 
 // Idel status
@@ -187,9 +187,14 @@ void setup() {
   stopAllMotors();
 }
 
-void ledControl() {
-  fill_solid(leds, LED_COUNT, CRGB::Red);
-  FastLED.show();
+void ledControl(bool ledStatus) {
+  if (ledStatus) {
+    fill_solid(leds, LED_COUNT, CRGB::White);
+    FastLED.show();
+  } else {
+    FastLED.clear(); 
+    FastLED.show();  
+  }
 }
 
 /*
@@ -471,8 +476,9 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
   if (memcmp(sender->src_addr, controllerMac, 6) == 0 && len == 1) {
     Serial.print("Received command: ");
     Serial.println(data[0]);
+    
 
-    if (data[0] == 9) {  // Toggle autonomous mode
+     if (data[0] == 9) {  // Toggle autonomous mode
       selfDrivingMode = !selfDrivingMode;
       sendRoverStatus(selfDrivingMode ? "AUTO ENABLED" : "Idel", currentDistance, SERVO_CENTER, 0);
       Serial.print("Self-Driving Mode: ");
@@ -500,10 +506,11 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
             case 10: motorSpeed = min(motorSpeed + 5, 255); Serial.print("Speed Increased: "); Serial.println(motorSpeed); break;
             case 11: motorSpeed = max(motorSpeed - 5, 200);  Serial.print("Speed Decreased: "); Serial.println(motorSpeed); break;
             case 12: currentServoAngle = SERVO_CENTER; usServo.write(currentServoAngle); sendRoverStatus("Center Servo", currentDistance, currentServoAngle, 0); break; 
-            case 13:currentServoAngle -= 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
+            case 13: currentServoAngle -= 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
             sendRoverStatus("Scaning Right", currentDistance, currentServoAngle, 0); break;
-            case 14:currentServoAngle += 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
+            case 14: currentServoAngle += 2; currentServoAngle = constrain(currentServoAngle, SERVO_MIN, SERVO_MAX);usServo.write(currentServoAngle);
             sendRoverStatus("Scaning Left", currentDistance, currentServoAngle, 0); break;
+            case 15: isLightsOn = !isLightsOn; Serial.print("LED: ");Serial.println(isLightsOn ? "ON" : "OFF"); break;
             case 0: stopAllMotors(); currentState = STOPPED; sendRoverStatus("Idle", currentDistance, currentServoAngle, 0); break;
         }
 
@@ -529,7 +536,8 @@ void sendRoverStatus(const char* action, float distance, int angle, int motorSpe
 }
 
 void loop() {
-  ledControl();
+
+  ledControl(isLightsOn);
   
   unsigned long now = millis();
 

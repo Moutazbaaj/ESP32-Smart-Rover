@@ -213,12 +213,20 @@ void loop() {
     else if  (servo) {
       if (up)         { newCommand = 10; isCombo = true; }
       else if (down)  { newCommand = 11; isCombo = true; }
-      else            newCommand = 12;
+      else            newCommand = 15; // 12 sevo control
     } 
+
     else if (left)   newCommand = 3;
     else if (right)  newCommand = 4;
-    else if (up)     newCommand = 13;
+    else if (up) {
+      if (down) { newCommand = 12; isCombo = true; }
+      else        newCommand = 13;
+
+    }
     else if (down)   newCommand = 14;
+
+
+
 
     // Handle command transitions
     if (isCombo) {
