@@ -3,14 +3,7 @@
 #include <ESP32Servo.h>
 #include <EEPROM.h>
 #include <FastLED.h>
-/*
-// Shift Register Pins
-#define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
-#define CLOCK_PIN  27  // ESP32 GPIO27 → SN74HC595 pin 11 (SRCLK)
-#define LATCH_PIN   5  // ESP32 GPIO5  → SN74HC595 pin 12 (RCLK) //
-#define OE_PIN     32 // ESP32 GPIO32 → SN74HC595 pin 13 (OE)
-#define DATA_PIN   12  // ESP32 GPIO12 → SN74HC595 pin 14 (SER)
-*/
+
 
 // LED pin 
 #define LED_PIN 12
@@ -82,20 +75,6 @@ float currentDistance = 0.0;
 // Mototr speed
 int motorSpeed = 255;  // Default speed (0-255)
 
-/*
-// LED Mapping
-enum LEDPosition {
-  FRONT_LEFT_WHITE = 0b00100000,   // Q7
-  FRONT_LEFT_YELLOW = 0b01000000,  // Q6
-  FRONT_RIGHT_WHITE = 0b10000000,  // Q5
-  FRONT_RIGHT_YELLOW = 0b00010000, // Q4
-  BACK_LEFT_RED = 0b00001000,      // Q3
-  BACK_LEFT_YELLOW = 0b00000100,   // Q2
-  BACK_RIGHT_RED = 0b00000010,     // Q1
-  BACK_RIGHT_YELLOW = 0b00000001   // Q0
-};
-*/
-
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
 State currentState = STOPPED;
@@ -118,18 +97,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
 
-  /*
-  // Initialize shift register
-  pinMode(DATA_PIN, OUTPUT);
-  pinMode(CLOCK_PIN, OUTPUT);
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(OE_PIN, OUTPUT);
-  pinMode(MR_PIN, OUTPUT);
-  digitalWrite(OE_PIN, LOW);    // Enable outputs
-  digitalWrite(MR_PIN, HIGH);  // Disable reset
-  updateLEDs(0);              // Clear all LEDs
-  */
-  
+
   
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, LED_COUNT);
   
@@ -197,60 +165,7 @@ void ledControl(bool ledStatus) {
   }
 }
 
-/*
-void ledControl() {
-  if (isLightsOn = false) return;
 
-  uint16_t leds = 0;
-
-  switch (currentState) {
-    case FORWARD:
-      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE;
-      break;
-
-    case TURNINGR:
-      leds = FRONT_RIGHT_YELLOW | BACK_RIGHT_YELLOW;
-      break;
-
-    case TURNINGL:
-      leds = FRONT_LEFT_YELLOW | BACK_LEFT_YELLOW;
-      break;
-
-    case BACKWARD:
-      leds = BACK_LEFT_RED | BACK_RIGHT_RED;
-      break;
-
-    case SCANNING:
-      leds = FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW | BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW;
-      break;
-
-    case STOPPED:
-      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE |
-             FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW |
-             BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |
-             BACK_LEFT_RED | BACK_RIGHT_RED;
-      break;
-
-    default:
-      leds = FRONT_LEFT_WHITE | FRONT_RIGHT_WHITE |
-             FRONT_LEFT_YELLOW | FRONT_RIGHT_YELLOW |
-             BACK_LEFT_YELLOW | BACK_RIGHT_YELLOW |
-             BACK_LEFT_RED | BACK_RIGHT_RED;
-      break;
-  }
-
-  updateLEDs(leds);
-}
-*/
-
-/*
-// Shift Register LED Control
-void updateLEDs(uint8_t pattern) {
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, pattern);
-  digitalWrite(LATCH_PIN, HIGH);
-}
-*/
 
 // Motor control functions
 void moveForward(int speed) {
