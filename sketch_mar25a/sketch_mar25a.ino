@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
 #include <EEPROM.h>
+#include <FastLED.h>
 /*
 // Shift Register Pins
 #define MR_PIN     33  // ESP32 GPIO33 → SN74HC595 pin 10 (MR)
@@ -12,8 +13,9 @@
 */
 
 // LED pin 
-#define LED 12
-
+#define LED_PIN 12
+#define LED_COUNT 8
+CRGB leds[LED_COUNT];
 
 // Motor pins
 #define AIN1 18    // Rear Motor Forward
@@ -68,8 +70,8 @@ Servo usServo;
 const int SERVO_MIN = 0;
 const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
-const int SERVO_SPEED = 1;           // ms between steps (lower = smoother)
-const int SCAN_STEP = 5;              // Degrees per step
+const int SERVO_SPEED = 2;           // ms between steps (lower = smoother)
+const int SCAN_STEP = 2;              // Degrees per step
 int currentServoAngle = SERVO_CENTER; // Tracks current servo position
 
 // Ultrasonic settings
@@ -81,6 +83,7 @@ float currentDistance = 0.0;
 // Mototr speed
 int motorSpeed = 255;  // Default speed (0-255)
 
+/*
 // LED Mapping
 enum LEDPosition {
   FRONT_LEFT_WHITE = 0b00100000,   // Q7
@@ -92,7 +95,7 @@ enum LEDPosition {
   BACK_RIGHT_RED = 0b00000010,     // Q1
   BACK_RIGHT_YELLOW = 0b00000001   // Q0
 };
-
+*/
 
 // Movement states
 enum State { STOPPED, FORWARD, BACKWARD, TURNINGR, TURNINGL, SCANNING };
@@ -115,7 +118,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
 
-/*
+  /*
   // Initialize shift register
   pinMode(DATA_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
@@ -125,8 +128,11 @@ void setup() {
   digitalWrite(OE_PIN, LOW);    // Enable outputs
   digitalWrite(MR_PIN, HIGH);  // Disable reset
   updateLEDs(0);              // Clear all LEDs
-*/
-
+  */
+  
+  
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, LED_COUNT);
+  
   // Initialize motors
   ledcAttach(PWM_CHANNEL_A, PWM_FREQ, PWM_RESOLUTION);
   ledcAttach(PWM_CHANNEL_B, PWM_FREQ, PWM_RESOLUTION);
@@ -181,6 +187,11 @@ void setup() {
   stopAllMotors();
 }
 
+void ledControl() {
+  fill_solid(leds, LED_COUNT, CRGB::Red);
+  FastLED.show();
+}
+
 /*
 void ledControl() {
   if (isLightsOn = false) return;
@@ -226,6 +237,7 @@ void ledControl() {
   updateLEDs(leds);
 }
 */
+
 /*
 // Shift Register LED Control
 void updateLEDs(uint8_t pattern) {
@@ -234,6 +246,7 @@ void updateLEDs(uint8_t pattern) {
   digitalWrite(LATCH_PIN, HIGH);
 }
 */
+
 // Motor control functions
 void moveForward(int speed) {
     lastActiveTime = millis();
@@ -516,6 +529,8 @@ void sendRoverStatus(const char* action, float distance, int angle, int motorSpe
 }
 
 void loop() {
+  ledControl();
+  
   unsigned long now = millis();
 
   // Autonomous driving logic
