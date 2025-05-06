@@ -15,17 +15,17 @@
 #define AIN2 19    // Rear Motor Backward
 #define BIN1 16    // Front Motor Left
 #define BIN2 17    // Front Motor Right
-#define STBY 14   // Must be an output-capable pin
+#define STBY 14    // Must be an output-capable pin
 
 
 // PWM Pins
 #define PWMA 21   // Rear Motor
-#define PWMB 22 // Front Motor
+#define PWMB 22   // Front Motor
 
 
 // PWM channels
-#define PWM_CHANNEL_A 21  // Channel 2 for IN1
-#define PWM_CHANNEL_B 22 // Channel 0 for IN2
+#define PWM_CHANNEL_A 21.   // Channel 2 for IN1
+#define PWM_CHANNEL_B 22.   // Channel 0 for IN2
 #define PWM_FREQ  5000      // PWM frequency in Hz
 #define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
 
@@ -38,7 +38,7 @@
 #define SERVO_PIN 26
 
 // KY-032
-#define OBSTACLE_PIN 5 //22
+#define OBSTACLE_PIN 5 
 
 // MAC address
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
@@ -62,7 +62,7 @@ const int SERVO_MIN = 0;
 const int SERVO_MAX = 180;
 const int SERVO_CENTER = 90;
 const int SERVO_SPEED = 2;           // ms between steps (lower = smoother)
-const int SCAN_STEP = 2;              // Degrees per step
+const int SCAN_STEP = 5;              // Degrees per step
 int currentServoAngle = SERVO_CENTER; // Tracks current servo position
 
 // Ultrasonic settings
@@ -161,6 +161,8 @@ void setup() {
     Serial.println("Peer added successfully");
   }
 
+  stopAllMotors();
+
   // === HTTP Handlers ===
 
   server.on("/", []() {
@@ -210,42 +212,42 @@ void setup() {
 
   // Forward + Right
   server.on("/forward_right", []() {
-  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
-  moveForward(motorSpeed);
-  turnRight(255);
-  currentState = FORWARD;
-  sendRoverStatus("Manual FORWARD R", currentDistance, currentServoAngle, motorSpeed);
-  server.send(200, "text/plain", "Moving Forward Right");
+   if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+   moveForward(motorSpeed);
+   turnRight(255);
+   currentState = FORWARD;
+   sendRoverStatus("Manual FORWARD R", currentDistance, currentServoAngle, motorSpeed);
+   server.send(200, "text/plain", "Moving Forward Right");
   });
 
   // Forward + Left
   server.on("/forward_left", []() {
-  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
-  moveForward(motorSpeed);
-  turnLeft(255);
-  currentState = FORWARD;
-  sendRoverStatus("Manual FORWARD L", currentDistance, currentServoAngle, motorSpeed);
-  server.send(200, "text/plain", "Moving Forward Left");
+   if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+   moveForward(motorSpeed);
+   turnLeft(255);
+   currentState = FORWARD;
+   sendRoverStatus("Manual FORWARD L", currentDistance, currentServoAngle, motorSpeed);
+   server.send(200, "text/plain", "Moving Forward Left");
   });
 
   // Backward + Right
   server.on("/backward_right", []() {
-  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
-  moveBackward(motorSpeed);
-  turnRight(255);
-  currentState = BACKWARD;
-  sendRoverStatus("Manual BACKWARD R", currentDistance, currentServoAngle, motorSpeed);
-  server.send(200, "text/plain", "Moving Backward Right");
+   if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+   moveBackward(motorSpeed);
+   turnRight(255);
+   currentState = BACKWARD;
+   sendRoverStatus("Manual BACKWARD R", currentDistance, currentServoAngle, motorSpeed);
+   server.send(200, "text/plain", "Moving Backward Right");
   });
 
   // Backward + Left
   server.on("/backward_left", []() {
-  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
-  moveBackward(motorSpeed);
-  turnLeft(255);
-  currentState = BACKWARD;
-  sendRoverStatus("Manual BACKWARD L", currentDistance, currentServoAngle, motorSpeed);
-  server.send(200, "text/plain", "Moving Backward Left");
+   if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+   moveBackward(motorSpeed);
+   turnLeft(255);
+   currentState = BACKWARD;
+   sendRoverStatus("Manual BACKWARD L", currentDistance, currentServoAngle, motorSpeed);
+   server.send(200, "text/plain", "Moving Backward Left");
   });
 
   server.on("/stop", []() {
@@ -296,7 +298,6 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
 
-  stopAllMotors();
 }
 
 // LED CONTROLL 
