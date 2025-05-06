@@ -446,6 +446,9 @@ void scanEnvironment() {
 
 // Autonomous navigation
 void autonomousDrive() {
+  usServo.write(SERVO_CENTER);
+  Serial.print("centering servo to 90 dgree");
+
   float distance = getDistanceCM();
   bool irObstacle = digitalRead(OBSTACLE_PIN) == LOW; // LOW means obstacle detected
 
@@ -476,7 +479,7 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
   if (memcmp(sender->src_addr, controllerMac, 6) == 0 && len == 1) {
     Serial.print("Received command: ");
     Serial.println(data[0]);
-    
+
 
      if (data[0] == 9) {  // Toggle autonomous mode
       selfDrivingMode = !selfDrivingMode;
