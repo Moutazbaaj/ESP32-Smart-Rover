@@ -3,6 +3,7 @@
 #include <ESP32Servo.h>
 #include <EEPROM.h>
 #include <FastLED.h>
+#include <WebServer.h>
 
 
 // LED pin 
@@ -39,8 +40,6 @@
 // KY-032
 #define OBSTACLE_PIN 5 //22
 
-
- 
 // MAC address
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
 
@@ -93,6 +92,10 @@ unsigned long lastIdleReportTime = 0;
 const unsigned long IDLE_TIMEOUT = 20;        // 2 seconds idle timeout
 const unsigned long IDLE_REPORT_INTERVAL = 50; // Send idle update every 5 seconds
 
+
+// Init web server 
+WebServer server(80);
+
 void setup() {
   Serial.begin(115200);
   Serial.println("===== SMART ROVER INITIALIZED =====");
@@ -129,9 +132,15 @@ void setup() {
   delay(500);
 
 
-  // Initialize ESP-NOW
-  WiFi.mode(WIFI_STA);
-  if (esp_now_init() != ESP_OK) {
+  // Initialize ESP-NOW and the AP
+  WiFi.mode(WIFI_AP_STA);  // Support both AP and STA (ESP-NOW)
+
+  WiFi.softAP("SmartRover", "12345678"); // SSID and password
+  Serial.println("Access Point Started");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.softAPIP()); 
+  
+   if (esp_now_init() != ESP_OK) {
     Serial.println("ESP-NOW Init Failed, restarting...");
     ESP.restart();
     //return;
@@ -152,9 +161,145 @@ void setup() {
     Serial.println("Peer added successfully");
   }
 
+  // === HTTP Handlers ===
+
+  server.on("/", []() {
+    server.send(200, "text/plain", "Smart Rover Ready");
+  });
+
+  // Toggle autonomous mode
+  server.on("/toggle_auto", []() {
+    selfDrivingMode = !selfDrivingMode;
+    stopAllMotors();
+    sendRoverStatus(selfDrivingMode ? "AUTO ENABLED" : "Idle", currentDistance, SERVO_CENTER, 0);
+    server.send(200, "text/plain", selfDrivingMode ? "Self-Driving ON" : "Self-Driving OFF");
+  });
+
+  // Movement commands (manual mode only)
+  server.on("/forward", []() {
+    if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+    moveForward(motorSpeed);
+    currentState = FORWARD;
+    sendRoverStatus("Manual FORWARD", currentDistance, currentServoAngle, motorSpeed);
+    server.send(200, "text/plain", "Moving Forward");
+  });
+
+  server.on("/backward", []() {
+    if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+    moveBackward(motorSpeed);
+    currentState = BACKWARD;
+    sendRoverStatus("Manual BACKWARD", currentDistance, currentServoAngle, motorSpeed);
+    server.send(200, "text/plain", "Moving Backward");
+  });
+
+  server.on("/left", []() {
+    if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+    turnLeft(255);
+    currentState = TURNINGL;
+    sendRoverStatus("Manual TURNING L", currentDistance, currentServoAngle, motorSpeed);
+    server.send(200, "text/plain", "Turning Left");
+  });
+
+  server.on("/right", []() {
+    if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+    turnRight(255);
+    currentState = TURNINGR;
+    sendRoverStatus("Manual TURNING R", currentDistance, currentServoAngle, motorSpeed);
+    server.send(200, "text/plain", "Turning Right");
+  });
+
+  // Forward + Right
+  server.on("/forward_right", []() {
+  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+  moveForward(motorSpeed);
+  turnRight(255);
+  currentState = FORWARD;
+  sendRoverStatus("Manual FORWARD R", currentDistance, currentServoAngle, motorSpeed);
+  server.send(200, "text/plain", "Moving Forward Right");
+  });
+
+  // Forward + Left
+  server.on("/forward_left", []() {
+  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+  moveForward(motorSpeed);
+  turnLeft(255);
+  currentState = FORWARD;
+  sendRoverStatus("Manual FORWARD L", currentDistance, currentServoAngle, motorSpeed);
+  server.send(200, "text/plain", "Moving Forward Left");
+  });
+
+  // Backward + Right
+  server.on("/backward_right", []() {
+  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+  moveBackward(motorSpeed);
+  turnRight(255);
+  currentState = BACKWARD;
+  sendRoverStatus("Manual BACKWARD R", currentDistance, currentServoAngle, motorSpeed);
+  server.send(200, "text/plain", "Moving Backward Right");
+  });
+
+  // Backward + Left
+  server.on("/backward_left", []() {
+  if (selfDrivingMode) return server.send(403, "text/plain", "In Auto Mode");
+  moveBackward(motorSpeed);
+  turnLeft(255);
+  currentState = BACKWARD;
+  sendRoverStatus("Manual BACKWARD L", currentDistance, currentServoAngle, motorSpeed);
+  server.send(200, "text/plain", "Moving Backward Left");
+  });
+
+  server.on("/stop", []() {
+    stopAllMotors();
+    currentState = STOPPED;
+    sendRoverStatus("Idle", currentDistance, currentServoAngle, 0);
+    server.send(200, "text/plain", "Stopped");
+  });
+
+  server.on("/speedup", []() {
+    motorSpeed = min(motorSpeed + 5, 255);
+    server.send(200, "text/plain", "Speed Increased");
+  });
+
+  server.on("/speeddown", []() {
+    motorSpeed = max(motorSpeed - 5, 200);
+    server.send(200, "text/plain", "Speed Decreased");
+  });
+
+  server.on("/center_servo", []() {
+    currentServoAngle = SERVO_CENTER;
+    usServo.write(currentServoAngle);
+    sendRoverStatus("Center Servo", currentDistance, currentServoAngle, 0);
+    server.send(200, "text/plain", "Servo Centered");
+  });
+
+  server.on("/servo_left", []() {
+    currentServoAngle = constrain(currentServoAngle + 2, SERVO_MIN, SERVO_MAX);
+    usServo.write(currentServoAngle);
+    sendRoverStatus("Scanning Left", currentDistance, currentServoAngle, 0);
+    server.send(200, "text/plain", "Servo Left");
+  });
+
+  server.on("/servo_right", []() {
+    currentServoAngle = constrain(currentServoAngle - 2, SERVO_MIN, SERVO_MAX);
+    usServo.write(currentServoAngle);
+    sendRoverStatus("Scanning Right", currentDistance, currentServoAngle, 0);
+    server.send(200, "text/plain", "Servo Right");
+  });
+
+  server.on("/toggle_led", []() {
+    isLightsOn = !isLightsOn;
+    digitalWrite(LED_PIN, isLightsOn ? HIGH : LOW);
+    server.send(200, "text/plain", isLightsOn ? "LED ON" : "LED OFF");
+  });
+
+  // Start the server
+  server.begin();
+  Serial.println("HTTP server started");
+
   stopAllMotors();
 }
 
+// LED CONTROLL 
 void ledControl(bool ledStatus) {
   if (ledStatus) {
     fill_solid(leds, LED_COUNT, CRGB::White);
@@ -164,8 +309,6 @@ void ledControl(bool ledStatus) {
     FastLED.show();  
   }
 }
-
-
 
 // Motor control functions
 void moveForward(int speed) {
@@ -454,6 +597,8 @@ void sendRoverStatus(const char* action, float distance, int angle, int motorSpe
 }
 
 void loop() {
+
+  server.handleClient();
 
   ledControl(isLightsOn);
   
