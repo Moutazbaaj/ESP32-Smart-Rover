@@ -7,62 +7,62 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		47C61F642D95655D0072E7D4 /* PBXContainerItemProxy */ = {
+		47AFBAAC2DCA85DD00D80C12 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 47C61F4A2D95655B0072E7D4 /* Project object */;
+			containerPortal = 47AFBA932DCA85DB00D80C12 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 47C61F512D95655B0072E7D4;
-			remoteInfo = RoverController;
+			remoteGlobalIDString = 47AFBA9A2DCA85DB00D80C12;
+			remoteInfo = "Smart Rover Controller";
 		};
-		47C61F6E2D95655D0072E7D4 /* PBXContainerItemProxy */ = {
+		47AFBAB62DCA85DD00D80C12 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 47C61F4A2D95655B0072E7D4 /* Project object */;
+			containerPortal = 47AFBA932DCA85DB00D80C12 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 47C61F512D95655B0072E7D4;
-			remoteInfo = RoverController;
+			remoteGlobalIDString = 47AFBA9A2DCA85DB00D80C12;
+			remoteInfo = "Smart Rover Controller";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		47C61F522D95655B0072E7D4 /* RoverController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoverController.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		47C61F632D95655D0072E7D4 /* RoverControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoverControllerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		47C61F6D2D95655D0072E7D4 /* RoverControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoverControllerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		47AFBA9B2DCA85DB00D80C12 /* Smart Rover Controller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Smart Rover Controller.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		47AFBAAB2DCA85DD00D80C12 /* Smart Rover ControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Smart Rover ControllerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		47AFBAB52DCA85DD00D80C12 /* Smart Rover ControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Smart Rover ControllerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		47C61F542D95655B0072E7D4 /* RoverController */ = {
+		47AFBA9D2DCA85DB00D80C12 /* Smart Rover Controller */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RoverController;
+			path = "Smart Rover Controller";
 			sourceTree = "<group>";
 		};
-		47C61F662D95655D0072E7D4 /* RoverControllerTests */ = {
+		47AFBAAE2DCA85DD00D80C12 /* Smart Rover ControllerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RoverControllerTests;
+			path = "Smart Rover ControllerTests";
 			sourceTree = "<group>";
 		};
-		47C61F702D95655D0072E7D4 /* RoverControllerUITests */ = {
+		47AFBAB82DCA85DD00D80C12 /* Smart Rover ControllerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RoverControllerUITests;
+			path = "Smart Rover ControllerUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		47C61F4F2D95655B0072E7D4 /* Frameworks */ = {
+		47AFBA982DCA85DB00D80C12 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F602D95655D0072E7D4 /* Frameworks */ = {
+		47AFBAA82DCA85DD00D80C12 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F6A2D95655D0072E7D4 /* Frameworks */ = {
+		47AFBAB22DCA85DD00D80C12 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -72,22 +72,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		47C61F492D95655B0072E7D4 = {
+		47AFBA922DCA85DB00D80C12 = {
 			isa = PBXGroup;
 			children = (
-				47C61F542D95655B0072E7D4 /* RoverController */,
-				47C61F662D95655D0072E7D4 /* RoverControllerTests */,
-				47C61F702D95655D0072E7D4 /* RoverControllerUITests */,
-				47C61F532D95655B0072E7D4 /* Products */,
+				47AFBA9D2DCA85DB00D80C12 /* Smart Rover Controller */,
+				47AFBAAE2DCA85DD00D80C12 /* Smart Rover ControllerTests */,
+				47AFBAB82DCA85DD00D80C12 /* Smart Rover ControllerUITests */,
+				47AFBA9C2DCA85DB00D80C12 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		47C61F532D95655B0072E7D4 /* Products */ = {
+		47AFBA9C2DCA85DB00D80C12 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				47C61F522D95655B0072E7D4 /* RoverController.app */,
-				47C61F632D95655D0072E7D4 /* RoverControllerTests.xctest */,
-				47C61F6D2D95655D0072E7D4 /* RoverControllerUITests.xctest */,
+				47AFBA9B2DCA85DB00D80C12 /* Smart Rover Controller.app */,
+				47AFBAAB2DCA85DD00D80C12 /* Smart Rover ControllerTests.xctest */,
+				47AFBAB52DCA85DD00D80C12 /* Smart Rover ControllerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,134 +95,134 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		47C61F512D95655B0072E7D4 /* RoverController */ = {
+		47AFBA9A2DCA85DB00D80C12 /* Smart Rover Controller */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47C61F772D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverController" */;
+			buildConfigurationList = 47AFBABF2DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover Controller" */;
 			buildPhases = (
-				47C61F4E2D95655B0072E7D4 /* Sources */,
-				47C61F4F2D95655B0072E7D4 /* Frameworks */,
-				47C61F502D95655B0072E7D4 /* Resources */,
+				47AFBA972DCA85DB00D80C12 /* Sources */,
+				47AFBA982DCA85DB00D80C12 /* Frameworks */,
+				47AFBA992DCA85DB00D80C12 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				47C61F542D95655B0072E7D4 /* RoverController */,
+				47AFBA9D2DCA85DB00D80C12 /* Smart Rover Controller */,
 			);
-			name = RoverController;
+			name = "Smart Rover Controller";
 			packageProductDependencies = (
 			);
-			productName = RoverController;
-			productReference = 47C61F522D95655B0072E7D4 /* RoverController.app */;
+			productName = "Smart Rover Controller";
+			productReference = 47AFBA9B2DCA85DB00D80C12 /* Smart Rover Controller.app */;
 			productType = "com.apple.product-type.application";
 		};
-		47C61F622D95655D0072E7D4 /* RoverControllerTests */ = {
+		47AFBAAA2DCA85DD00D80C12 /* Smart Rover ControllerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47C61F7A2D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverControllerTests" */;
+			buildConfigurationList = 47AFBAC22DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover ControllerTests" */;
 			buildPhases = (
-				47C61F5F2D95655D0072E7D4 /* Sources */,
-				47C61F602D95655D0072E7D4 /* Frameworks */,
-				47C61F612D95655D0072E7D4 /* Resources */,
+				47AFBAA72DCA85DD00D80C12 /* Sources */,
+				47AFBAA82DCA85DD00D80C12 /* Frameworks */,
+				47AFBAA92DCA85DD00D80C12 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				47C61F652D95655D0072E7D4 /* PBXTargetDependency */,
+				47AFBAAD2DCA85DD00D80C12 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				47C61F662D95655D0072E7D4 /* RoverControllerTests */,
+				47AFBAAE2DCA85DD00D80C12 /* Smart Rover ControllerTests */,
 			);
-			name = RoverControllerTests;
+			name = "Smart Rover ControllerTests";
 			packageProductDependencies = (
 			);
-			productName = RoverControllerTests;
-			productReference = 47C61F632D95655D0072E7D4 /* RoverControllerTests.xctest */;
+			productName = "Smart Rover ControllerTests";
+			productReference = 47AFBAAB2DCA85DD00D80C12 /* Smart Rover ControllerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		47C61F6C2D95655D0072E7D4 /* RoverControllerUITests */ = {
+		47AFBAB42DCA85DD00D80C12 /* Smart Rover ControllerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47C61F7D2D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverControllerUITests" */;
+			buildConfigurationList = 47AFBAC52DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover ControllerUITests" */;
 			buildPhases = (
-				47C61F692D95655D0072E7D4 /* Sources */,
-				47C61F6A2D95655D0072E7D4 /* Frameworks */,
-				47C61F6B2D95655D0072E7D4 /* Resources */,
+				47AFBAB12DCA85DD00D80C12 /* Sources */,
+				47AFBAB22DCA85DD00D80C12 /* Frameworks */,
+				47AFBAB32DCA85DD00D80C12 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				47C61F6F2D95655D0072E7D4 /* PBXTargetDependency */,
+				47AFBAB72DCA85DD00D80C12 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				47C61F702D95655D0072E7D4 /* RoverControllerUITests */,
+				47AFBAB82DCA85DD00D80C12 /* Smart Rover ControllerUITests */,
 			);
-			name = RoverControllerUITests;
+			name = "Smart Rover ControllerUITests";
 			packageProductDependencies = (
 			);
-			productName = RoverControllerUITests;
-			productReference = 47C61F6D2D95655D0072E7D4 /* RoverControllerUITests.xctest */;
+			productName = "Smart Rover ControllerUITests";
+			productReference = 47AFBAB52DCA85DD00D80C12 /* Smart Rover ControllerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		47C61F4A2D95655B0072E7D4 /* Project object */ = {
+		47AFBA932DCA85DB00D80C12 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
-					47C61F512D95655B0072E7D4 = {
+					47AFBA9A2DCA85DB00D80C12 = {
 						CreatedOnToolsVersion = 16.2;
 					};
-					47C61F622D95655D0072E7D4 = {
+					47AFBAAA2DCA85DD00D80C12 = {
 						CreatedOnToolsVersion = 16.2;
-						TestTargetID = 47C61F512D95655B0072E7D4;
+						TestTargetID = 47AFBA9A2DCA85DB00D80C12;
 					};
-					47C61F6C2D95655D0072E7D4 = {
+					47AFBAB42DCA85DD00D80C12 = {
 						CreatedOnToolsVersion = 16.2;
-						TestTargetID = 47C61F512D95655B0072E7D4;
+						TestTargetID = 47AFBA9A2DCA85DB00D80C12;
 					};
 				};
 			};
-			buildConfigurationList = 47C61F4D2D95655B0072E7D4 /* Build configuration list for PBXProject "RoverController" */;
+			buildConfigurationList = 47AFBA962DCA85DB00D80C12 /* Build configuration list for PBXProject "Smart Rover Controller" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 47C61F492D95655B0072E7D4;
+			mainGroup = 47AFBA922DCA85DB00D80C12;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 47C61F532D95655B0072E7D4 /* Products */;
+			productRefGroup = 47AFBA9C2DCA85DB00D80C12 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				47C61F512D95655B0072E7D4 /* RoverController */,
-				47C61F622D95655D0072E7D4 /* RoverControllerTests */,
-				47C61F6C2D95655D0072E7D4 /* RoverControllerUITests */,
+				47AFBA9A2DCA85DB00D80C12 /* Smart Rover Controller */,
+				47AFBAAA2DCA85DD00D80C12 /* Smart Rover ControllerTests */,
+				47AFBAB42DCA85DD00D80C12 /* Smart Rover ControllerUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		47C61F502D95655B0072E7D4 /* Resources */ = {
+		47AFBA992DCA85DB00D80C12 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F612D95655D0072E7D4 /* Resources */ = {
+		47AFBAA92DCA85DD00D80C12 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F6B2D95655D0072E7D4 /* Resources */ = {
+		47AFBAB32DCA85DD00D80C12 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -232,21 +232,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		47C61F4E2D95655B0072E7D4 /* Sources */ = {
+		47AFBA972DCA85DB00D80C12 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F5F2D95655D0072E7D4 /* Sources */ = {
+		47AFBAA72DCA85DD00D80C12 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		47C61F692D95655D0072E7D4 /* Sources */ = {
+		47AFBAB12DCA85DD00D80C12 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -256,20 +256,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		47C61F652D95655D0072E7D4 /* PBXTargetDependency */ = {
+		47AFBAAD2DCA85DD00D80C12 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47C61F512D95655B0072E7D4 /* RoverController */;
-			targetProxy = 47C61F642D95655D0072E7D4 /* PBXContainerItemProxy */;
+			target = 47AFBA9A2DCA85DB00D80C12 /* Smart Rover Controller */;
+			targetProxy = 47AFBAAC2DCA85DD00D80C12 /* PBXContainerItemProxy */;
 		};
-		47C61F6F2D95655D0072E7D4 /* PBXTargetDependency */ = {
+		47AFBAB72DCA85DD00D80C12 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47C61F512D95655B0072E7D4 /* RoverController */;
-			targetProxy = 47C61F6E2D95655D0072E7D4 /* PBXContainerItemProxy */;
+			target = 47AFBA9A2DCA85DB00D80C12 /* Smart Rover Controller */;
+			targetProxy = 47AFBAB62DCA85DD00D80C12 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		47C61F752D95655D0072E7D4 /* Debug */ = {
+		47AFBABD2DCA85DD00D80C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -321,16 +321,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		47C61F762D95655D0072E7D4 /* Release */ = {
+		47AFBABE2DCA85DD00D80C12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -376,94 +378,75 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		47C61F782D95655D0072E7D4 /* Debug */ = {
+		47AFBAC02DCA85DD00D80C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = RoverController/RoverController.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"RoverController/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Smart Rover Controller/Preview Content\"";
 				DEVELOPMENT_TEAM = FKXLSC77G3;
-				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "neeb bluetooth";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverController;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-Controller";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		47C61F792D95655D0072E7D4 /* Release */ = {
+		47AFBAC12DCA85DD00D80C12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = RoverController/RoverController.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"RoverController/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Smart Rover Controller/Preview Content\"";
 				DEVELOPMENT_TEAM = FKXLSC77G3;
-				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "neeb bluetooth";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverController;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-Controller";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
-		47C61F7B2D95655D0072E7D4 /* Debug */ = {
+		47AFBAC32DCA85DD00D80C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -472,21 +455,17 @@
 				DEVELOPMENT_TEAM = FKXLSC77G3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverControllerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-ControllerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RoverController.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RoverController";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Smart Rover Controller.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Smart Rover Controller";
 			};
 			name = Debug;
 		};
-		47C61F7C2D95655D0072E7D4 /* Release */ = {
+		47AFBAC42DCA85DD00D80C12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -495,104 +474,90 @@
 				DEVELOPMENT_TEAM = FKXLSC77G3;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverControllerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-ControllerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RoverController.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RoverController";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Smart Rover Controller.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Smart Rover Controller";
 			};
 			name = Release;
 		};
-		47C61F7E2D95655D0072E7D4 /* Debug */ = {
+		47AFBAC62DCA85DD00D80C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FKXLSC77G3;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverControllerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-ControllerUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = RoverController;
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Smart Rover Controller";
 			};
 			name = Debug;
 		};
-		47C61F7F2D95655D0072E7D4 /* Release */ = {
+		47AFBAC72DCA85DD00D80C12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FKXLSC77G3;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = moutaz.RoverControllerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "MoutazBaaj.Smart-Rover-ControllerUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = RoverController;
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Smart Rover Controller";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		47C61F4D2D95655B0072E7D4 /* Build configuration list for PBXProject "RoverController" */ = {
+		47AFBA962DCA85DB00D80C12 /* Build configuration list for PBXProject "Smart Rover Controller" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C61F752D95655D0072E7D4 /* Debug */,
-				47C61F762D95655D0072E7D4 /* Release */,
+				47AFBABD2DCA85DD00D80C12 /* Debug */,
+				47AFBABE2DCA85DD00D80C12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47C61F772D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverController" */ = {
+		47AFBABF2DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover Controller" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C61F782D95655D0072E7D4 /* Debug */,
-				47C61F792D95655D0072E7D4 /* Release */,
+				47AFBAC02DCA85DD00D80C12 /* Debug */,
+				47AFBAC12DCA85DD00D80C12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47C61F7A2D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverControllerTests" */ = {
+		47AFBAC22DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover ControllerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C61F7B2D95655D0072E7D4 /* Debug */,
-				47C61F7C2D95655D0072E7D4 /* Release */,
+				47AFBAC32DCA85DD00D80C12 /* Debug */,
+				47AFBAC42DCA85DD00D80C12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47C61F7D2D95655D0072E7D4 /* Build configuration list for PBXNativeTarget "RoverControllerUITests" */ = {
+		47AFBAC52DCA85DD00D80C12 /* Build configuration list for PBXNativeTarget "Smart Rover ControllerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C61F7E2D95655D0072E7D4 /* Debug */,
-				47C61F7F2D95655D0072E7D4 /* Release */,
+				47AFBAC62DCA85DD00D80C12 /* Debug */,
+				47AFBAC72DCA85DD00D80C12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 47C61F4A2D95655B0072E7D4 /* Project object */;
+	rootObject = 47AFBA932DCA85DB00D80C12 /* Project object */;
 }

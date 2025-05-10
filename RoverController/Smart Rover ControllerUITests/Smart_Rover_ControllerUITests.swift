@@ -1,13 +1,13 @@
 //
-//  RoverControllerUITests.swift
-//  RoverControllerUITests
+//  Smart_Rover_ControllerUITests.swift
+//  Smart Rover ControllerUITests
 //
-//  Created by Moutaz Baaj on 27.03.25.
+//  Created by Moutaz Baaj on 06.05.25.
 //
 
 import XCTest
 
-final class RoverControllerUITests: XCTestCase {
+final class Smart_Rover_ControllerUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

@@ -1,13 +1,13 @@
 //
-//  RoverControllerUITestsLaunchTests.swift
-//  RoverControllerUITests
+//  Smart_Rover_ControllerUITestsLaunchTests.swift
+//  Smart Rover ControllerUITests
 //
-//  Created by Moutaz Baaj on 27.03.25.
+//  Created by Moutaz Baaj on 06.05.25.
 //
 
 import XCTest
 
-final class RoverControllerUITestsLaunchTests: XCTestCase {
+final class Smart_Rover_ControllerUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
