@@ -1,3 +1,24 @@
+/*
+===== SMART ROVER MAIN CONTROLLER =====
+Features:
+- ESP-NOW wireless communication with controller
+- Web server interface for control and monitoring
+- Autonomous obstacle avoidance with ultrasonic sensor
+- Manual control modes with speed adjustment
+- LED lighting control
+- Servo-mounted environmental scanning
+- Motor control with PWM
+- Status reporting to controller
+
+Hardware Components:
+- ESP32 microcontroller
+- L298N Motor Driver
+- HC-SR04 Ultrasonic Sensor
+- SG90 Servo Motor
+- WS2812B LED Strip
+- KY-032 Obstacle Sensor
+*/
+
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ESP32Servo.h>
@@ -6,66 +27,59 @@
 #include <WebServer.h>
 
 
-// LED pin 
-#define LED_PIN 12
-#define LED_COUNT 8
+// ========== HARDWARE CONFIGURATION ==========
+// LED Configuration
+#define LED_PIN 12       // GPIO pin for LED strip
+#define LED_COUNT 8      // Number of LEDs in strip
 
-// Motor pins
+// Motor Control Pins
 #define AIN1 18    // Rear Motor Forward
 #define AIN2 19    // Rear Motor Backward
 #define BIN1 16    // Front Motor Left
 #define BIN2 17    // Front Motor Right
-#define STBY 14    // Must be an output-capable pin
+#define STBY 14    // Motor Driver Standby
 
+// PWM Configuration
+#define PWMA 21    // Rear Motor PWM
+#define PWMB 22    // Front Motor PWM
+#define PWM_CHANNEL_A 21  // PWM Channel 2 for Rear Motor
+#define PWM_CHANNEL_B 22  // PWM Channel 0 for Front Motor
+#define PWM_FREQ 5000     // PWM frequency in Hz
+#define PWM_RESOLUTION 8  // 8-bit resolution (0-255)
 
-// PWM Pins
-#define PWMA 21   // Rear Motor
-#define PWMB 22   // Front Motor
+// Sensor Configuration
+#define TRIG_PIN 23       // Ultrasonic Trigger
+#define ECHO_PIN 25       // Ultrasonic Echo
+#define SERVO_PIN 26      // Servo Control
+#define OBSTACLE_PIN 5    // KY-032 Obstacle Sensor
 
-
-// PWM channels
-#define PWM_CHANNEL_A 21.   // Channel 2 for IN1
-#define PWM_CHANNEL_B 22.   // Channel 0 for IN2
-#define PWM_FREQ  5000      // PWM frequency in Hz
-#define PWM_RESOLUTION  8   // 8-bit resolution (0-255)
-
-
-// Ultrasonic Sensor pins
-#define TRIG_PIN 23
-#define ECHO_PIN 25
-
-// Servo pin
-#define SERVO_PIN 26
-
-// KY-032
-#define OBSTACLE_PIN 5 
-
-// MAC address
+// MAC Address of Controller
 uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90};
 
+// ========== DATA STRUCTURES ==========
 typedef struct RoverStatus {
-    char action[20];  // Action description (e.g., "Turning Left")
-    float distanceCM; // Distance detected
-    int servoAngle;   // Angle where clearance was found
-    int motorSpeed;   // the PMW Motor speed 
-    bool autoMode;    // Bool for auto mode status
+    char action[20];      // Current action description
+    float distanceCM;     // Measured distance in cm
+    int servoAngle;       // Current servo position
+    int motorSpeed;       // Current PWM speed (0-255)
+    bool autoMode;        // Autonomous mode status
 } RoverStatus;
 
-// Navigation settings
-const int OBSTACLE_DISTANCE_CM =30;  // Stop if obstacle < 20cm
-const int MIN_CLEARANCE = 35;         // Minimum acceptable clearance (cm)
-const unsigned long AUTO_DRIVE_INTERVAL = 500; // Check every 500ms
+// ========== NAVIGATION SETTINGS ==========
+const int OBSTACLE_DISTANCE_CM = 30;  // Stop threshold
+const int MIN_CLEARANCE = 35;         // Minimum clearance for path in cm
+const unsigned long AUTO_DRIVE_INTERVAL = 500; // Autonomous check interval
 
-// Servo settings
-Servo usServo;
-const int SERVO_MIN = 0;
-const int SERVO_MAX = 180;
-const int SERVO_CENTER = 90;
-const int SERVO_SPEED = 2;           // ms between steps (lower = smoother)
-const int SCAN_STEP = 5;              // Degrees per step
-int currentServoAngle = SERVO_CENTER; // Tracks current servo position
+// ========== SERVO CONFIGURATION ==========
+Servo usServo;            // Ultrasonic servo instance
+const int SERVO_MIN = 0;  // Minimum servo angle
+const int SERVO_MAX = 180;// Maximum servo angle
+const int SERVO_CENTER = 90;  // Center position
+const int SERVO_SPEED = 2;    // Movement delay (ms)
+const int SCAN_STEP = 5;      // Scanning step size (degrees)
+int currentServoAngle = SERVO_CENTER; // Current position
 
-// Ultrasonic settings
+// ========== Ultrasonic CONFIGURATION ==========
 unsigned long lastDistanceCheck = 0;
 const unsigned long DISTANCE_UPDATE_INTERVAL = 500; // check distance every 0.5s
 float currentDistance = 0.0;
