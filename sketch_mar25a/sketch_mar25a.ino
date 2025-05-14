@@ -335,10 +335,7 @@ void moveForward(int speed) {
  // currentState = FORWARD;
  // ledControl();
   Serial.println("MOVING FORWARD");
-  /*
-    if (!selfDrivingMode) {
-    sendRoverStatus("Manual Forward", currentDistance, SERVO_CENTER, motorSpeed);
-  }*/
+
 }
 
 void moveBackward(int speed){
@@ -349,10 +346,6 @@ void moveBackward(int speed){
  // currentState = BACKWARD; 
  // ledControl();
   Serial.println("MOVING BACKWARD");
-  /*
-      if (!selfDrivingMode) {
-    sendRoverStatus("Manual BACKWARD", currentDistance, SERVO_CENTER, motorSpeed);
-  }*/
 }
 
 void turnRight(int speed) {
@@ -361,13 +354,8 @@ void turnRight(int speed) {
   digitalWrite(BIN1, LOW);
   digitalWrite(BIN2, HIGH);
   //currentState = TURNINGL;
- // ledControl();
-  
+  // ledControl();
   Serial.println("TURNING RIGHT");
-  /*
-        if (!selfDrivingMode) {
-    sendRoverStatus("Manual LEFT", currentDistance, SERVO_CENTER, motorSpeed);
-  }*/
 }
 
 void turnLeft(int speed) {
@@ -376,12 +364,7 @@ void turnLeft(int speed) {
   digitalWrite(BIN1, HIGH);
   digitalWrite(BIN2, LOW);
   //ledControl();
-  
   Serial.println("TURNING LEFT");
-  /*
-        if (!selfDrivingMode) {
-    sendRoverStatus("Manual RIGHT", currentDistance, SERVO_CENTER, motorSpeed);
-  } */
 }
 
 void stopAllMotors() {
@@ -394,7 +377,6 @@ void stopAllMotors() {
  // currentState = STOPPED;
  // ledControl();
   Serial.println("STOPPED");
-
 }
 
 // Ultrasonic distance measurement
