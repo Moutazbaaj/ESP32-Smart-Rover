@@ -75,7 +75,7 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 
 ## Wiring Diagrams
 
-.......
+Folow the pin in/output in the code
 
 ---
 
