@@ -16,7 +16,7 @@ This repository contains the full code, wiring details, and instructions for bui
 
 ---
 
-## ESP32 Smart Rover – Components List
+## Components List
 
 This is the full list of hardware components used in the ESP32 Smart Rover project.
 
