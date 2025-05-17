@@ -109,7 +109,8 @@ The code consists of two main sections:
 ## Power Setup
 
 * **Rover Power**: The controller is powered by 4x 1.5V AA lithium batteries (regulated to 5V using the LM2596 Buck Converter).
-
+* **Motor Power**: The Motors is powered by 3000mAh 3.7v 18650 Lithium Battery (stepped up to 6V using the XL6009 Buck Converter).
+* **PS** When Motors batteries are empty, it falls back to the main Rover power.
 ---
 
 ## Controller Button Mapping
