@@ -119,7 +119,10 @@ The code consists of two main sections:
 * **Backward Button**: Move the rover backward.
 * **Left Button**: Turn the rover left.
 * **Right Button**: Turn the rover right.
+* **center Button**: center the servo angle on 90° for the ultrasonic sensor.
 * **Servo Button (Up/Down)**: Adjust the servo angle for the ultrasonic sensor.
+* **light Button**: toggle light.
+* **speed Buttons**: Controls the motor speed through PWM.
 * **Self-driving Mode**: Activate by pressing both the left and right buttons simultaneously for 3 seconds.
 
 ---
