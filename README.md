@@ -1,155 +1,228 @@
-# ESP32 Smart Rover Project 🚗🔋☀️
 
-This project showcases a fully functional, autonomous ESP32-powered Smart Rover with remote control capabilities. It includes complete source code, wiring instructions, and a detailed component breakdown for both the rover and its wireless controller.
+# ESP32 Smart Rover Project
 
----
-
-## 📦 Table of Contents
-
-1. [Components List](#components-list)
-2. [Wiring Diagrams](#wiring-diagrams)
-3. [Code Overview](#code-overview)
-4. [Features and Functionality](#features-and-functionality)
-5. [Operating Modes](#operating-modes)
-6. [Power Setup](#power-setup)
-7. [Controller Button Mapping](#controller-button-mapping)
-8. [Troubleshooting](#troubleshooting)
-9. [How to Control the Rover](#how-to-control-the-rover)
+This repository contains the complete codebase, wiring details, and setup instructions for building an ESP32-powered Smart Rover system. It includes both the rover and the dedicated controller configurations.
 
 ---
 
-## 🔧 Components List
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Components List](#Components-list)
+3. [Architecture and Wiring](#architecture-and-wiring)
+4. [Code Structure](#code-structure)
+5. [Features](#features)
+6. [Power System](#power-system)
+7. [Operating Modes](#operating-modes)
+8. [Controller Button Mapping](#controller-button-mapping)
+9. [Troubleshooting](#troubleshooting)
+10. [Control Instructions](#control-instructions)
+
+---
+
+## Project Overview
+
+The ESP32 Smart Rover is a DIY autonomous rover platform featuring:
+
+- Dual-microcontroller architecture (ESP-NOW wireless protocol)
+- Obstacle avoidance using ultrasonic + IR sensors
+- Servo-mounted scanning head for enhanced pathfinding
+- Remote control via tactile button-based interface with OLED feedback
+- Solar-charged dual battery system
+- PWM-based speed control and LED signaling
+
+---
+
+
+## Components List
+
+This is the full list of hardware components used in the ESP32 Smart Rover project.
 
 ### 1. Microcontrollers
-- **2× ESP32 Mini D1** – one for the rover, one for the controller  
-  [Mini ESP32 Development Boards (Amazon)](https://www.amazon.de/dp/B0CJNMRG37?ref=ppx_pop_mob_ap_share)
 
-### 2. Motors & Drivers
-- **2× 3–6V DC Gear Motors** – rear-wheel drive  
-  [Mini DC Gear Motors (Amazon)](https://amzn.eu/d/8vJv5VG)
-- **1× 9G Micro Servo Motor** – rotates ultrasonic sensor  
-  [9G Servo Motor (Amazon)](https://www.amazon.de/dp/B0CMT8CF76?ref=ppx_pop_mob_ap_share)
-- **1× TB6612FNG Motor Driver** – dual DC motor driver  
-  [TB6612FNG Module (Amazon)](https://www.amazon.de/dp/B09MN8F1SD?ref=ppx_pop_mob_ap_share)
+* **2× ESP32 Mini D1** – one for the rover, one for the controller
+  [Pack of 3 Mini ESP32 Development Boards (Amazon)](https://www.amazon.de/dp/B0CJNMRG37?ref=ppx_pop_mob_ap_share)
+
+### 2. Motors & Motor Drivers
+
+* **2× 3–6V DC Gear Motors** – rear-wheel drive and front steering
+  [DIYDC Pack of 2 Mini DC Gear Motors (Amazon)](https://amzn.eu/d/8vJv5VG)
+* **1× 9G Micro Servo Motor** – for ultrasonic sensor rotation
+  [10pcs 9G Micro Servo Motor (Amazon)](https://www.amazon.de/dp/B0CMT8CF76?ref=ppx_pop_mob_ap_share)
+* **1× TB6612FNG Motor Driver** – dual-channel driver for DC motors
+  [2pcs TB6612FNG Dual DC Motor Driver (Amazon)](https://www.amazon.de/dp/B09MN8F1SD?ref=ppx_pop_mob_ap_share)
 
 ### 3. Sensors
-- **HC-SR04 Ultrasonic Sensor** – obstacle detection  
-  [HC-SR04 (Amazon)](https://amzn.eu/d/ilI85lk)
-- **IR Obstacle Sensor** – short-range detection  
-  [IR Obstacle Module (Amazon)](https://amzn.eu/d/j3NJQmh)
+
+* **1× Ultrasonic Distance Sensor (HC-SR04)** – for obstacle detection
+  [Ultraschallsensor HC-SR04 (Amazon)](https://amzn.eu/d/ilI85lk)
+* **1× IR Obstacle Detection Sensor** – short-range detection
+  [IR Infrared Obstacle Avoidance Module (Amazon)](https://amzn.eu/d/j3NJQmh)
 
 ### 4. Lighting
-- **RGB LED Ring (8 LEDs)** – front lighting & visual feedback  
-  [RGB LED Ring (Amazon)](https://www.amazon.de/dp/B0BZDQM8SX?ref=ppx_pop_mob_ap_share)
 
-### 5. Power Supply
+* **1× RGB LED Ring (8 Bit)** – front-mounted for illumination and signals
+  [AZDelivery 3x RGB LED Ring 8 Bit (Amazon)](https://www.amazon.de/dp/B0BZDQM8SX?ref=ppx_pop_mob_ap_share)
 
-#### Logic Power
-- **4× 1.5V AA Lithium Batteries** (regulated via LM2596)  
-  [Miady Lithium AA Batteries (Amazon)](https://www.amazon.de/dp/B0DHZCVMVM)
-- **1× LM2596 Buck Converter**  
-  [LM2596 Converter (Amazon)](https://www.amazon.de/dp/B0823P6PW6)
+### 5. Power System
 
-#### Motor Power
-- **1× 3000mAh 18650 Li-ion Battery**  
-  [18650 Battery (Amazon)](https://www.amazon.de/dp/B0D73P7Q5C)
-- **1× XL6009 Boost Converter** (3.7V → 6V)  
-  [XL6009 Module (Amazon)](https://www.amazon.de/dp/B0D9VPKHLK)
-- **1× BMS Module** – 18650 protection  
-  [BMS Board (Amazon)](https://www.amazon.de/dp/B0CSJR4CYJ)
-- **1× 6W Solar Panel** – solar charging  
-  [6W Solar Panel (Amazon)](https://www.amazon.de/dp/B0B8HPS3SB)
+#### Primary Battery (Logic)
 
-### 6. Display
-- **0.96" OLED Display** – mounted on the controller  
-  [OLED Display (Amazon)](https://www.amazon.de/dp/B0CXY8SM1H)
+* **4× 1.5V AA Lithium Batteries** – for powering ESP32 and peripherals
+  [Miady Rechargeable Lithium AA Batteries (Amazon)](https://www.amazon.de/dp/B0DHZCVMVM?ref=ppx_pop_mob_ap_share)
+* **1× LM2596 Buck Converter** – steps down from \~6V to 5V
+  [Yizhet LM2596 DC to DC Buck Converter (Amazon)](https://www.amazon.de/dp/B0823P6PW6?ref=ppx_pop_mob_ap_share)
 
----
+#### Secondary Battery (Motors + Solar)
 
-## ⚙️ Wiring Diagrams
+* **1× 3000mAh 18650 Lithium Battery** – solar-rechargeable power for motors
+  [Pack of 6 18650 Battery 3.7V 3000mAh (Amazon)](https://www.amazon.de/dp/B0D73P7Q5C?ref=ppx_pop_mob_ap_share)
+* **1× BMS Module** – Battery Management System for protection and regulation
+  [GTIWUNG Pack of 10 3.7V 18650 BMS (Amazon)](https://www.amazon.de/dp/B0CSJR4CYJ?ref=ppx_pop_mob_ap_share)
+* **1× XL6009 Boost Converter** – steps 3.7V up to 6V for motors
+  [XL6009 DC-DC Boost Converter Module (Amazon)](https://www.amazon.de/dp/B0D9VPKHLK?ref=ppx_pop_mob_ap_share)
+* **1× 6W Solar Panel** – recharges 18650 battery under sunlight
+  [6W Solar Panel for Wireless Applications (Amazon)](https://www.amazon.de/dp/B0B8HPS3SB?ref=ppx_pop_mob_ap_share)
 
-- Follow pin definitions from the source code.
-- Ensure **all components share the same GND**.
+### 6. Display (Controller)
+
+* **1× 0.96" OLED Display** – mounted on controller for feedback
+  [VoltMate 3x 0.96 inch OLED Displays (Amazon)](https://www.amazon.de/dp/B0CXY8SM1H?ref=ppx_pop_mob_ap_share)
 
 ---
 
-## 💻 Code Overview
+## Architecture and Wiring
 
-The codebase is divided into:
+- All GNDs are tied together to form a shared common ground.
+- Control logic (ESP32 + sensors + OLED) powered from regulated 5V line.
+- Motors are isolated via TB6612FNG and powered from stepped-up 6V.
 
-### 🔸 Rover Code
-- Motor control
-- Sensor reading
-- ESP-NOW communication
-- Autonomous navigation logic
-
-### 🔹 Controller Code
-- Button input handling
-- OLED display updates
-- Command transmission via ESP-NOW
-- Manual and autonomous mode control
+> Refer to the pin assignments within the code and ensure VIN/EN pins are properly handled (ESP32 EN tied to 10k pull-up if needed).
 
 ---
 
-## 🌟 Features and Functionality
 
-- 🚗 **Manual Driving** via tactile buttons
-- 🤖 **Self-Driving Mode** with obstacle avoidance
-- 📏 **Ultrasonic Scanning** with a servo motor
-- 💡 **RGB LED Feedback**
-- 📺 **OLED Status Display** (speed, direction, servo angle, distance)
 
----
+## Code Structure
 
-## 🔄 Operating Modes
+### 1. `rover.ino`
 
-1. **Manual Mode** – Controlled via directional buttons.
-2. **Autonomous Mode** – Activated by holding **Left + Right** for 3 seconds.
+- Sets up PWM for motor speed using `ledcSetup` and `ledcAttachPin`
+- Receives ESP-NOW commands, parses instruction struct:
+  ```cpp
+  struct Command {
+    int direction;
+    int speed;
+    bool toggleLight;
+    bool autonomous;
+  };
+  ```
+- Manages servo scanning using `SG90` on 9G Micro Servo
+- Obstacle avoidance runs in main loop if `autonomousMode == true`
+- LED ring controlled via `Adafruit_NeoPixel`
 
----
+### 2. `controller.ino`
 
-## 🔋 Power Setup
-
-- **ESP32 + Peripherals**: Powered by 4× AA lithium batteries (regulated to 5V via LM2596).
-- **Motors**: Powered by a solar-rechargeable 3000mAh 18650 battery (boosted to 6V via XL6009).
-- **Fallback**: If the 18650 is depleted, motors draw power from the main 5V system.
-
----
-
-## 🎮 Controller Button Mapping
-
-- **Forward / Backward / Left / Right**: Directional movement
-- **Center**: Center the ultrasonic servo (90°)
-- **Up / Down**: Adjust servo angle
-- **Light Button**: Toggle LED ring
-- **Speed Buttons**: Adjust PWM motor speed
-- **Autonomous Mode**: Hold Left + Right for 3 seconds
-
----
-
-## 🛠️ Troubleshooting
-
-| Issue                          | Solution                                              |
-|-------------------------------|-------------------------------------------------------|
-| Rover not moving              | Check motor wiring and power                         |
-| No response from controller   | Verify ESP-NOW pairing and power supply               |
-| Obstacle avoidance failing    | Confirm sensor positioning and remove obstructions    |
-
----
-
-## 🕹️ How to Control the Rover
-
-- Power on both the rover and controller.
-- Use the OLED display to monitor:
-  - Distance (cm)
-  - Speed level
+- Uses debounced 5-way tactile input
+- Implements combo detection:
+  - Simultaneous press of LEFT + RIGHT for 3s → toggles autonomous mode
+- Sends structured data packet over ESP-NOW
+- Displays on OLED via `Adafruit_SSD1306`:
+  - Action label
+  - Distance (from rover feedback)
   - Servo angle
-- Control the rover using the 5-way button:
-  - **Forward/Back**: Drive
-  - **Left/Right**: Steering
-  - **Up/Down**: Servo angle
-  - **Long press Left + Right**: Toggle autonomous mode
+  - Speed
 
 ---
 
-> Made with 💡, solar power ☀️, and a whole lot of ESP32 magic.
+## Features
+
+- **Manual Control**  
+- **Autonomous Driving with Obstacle Avoidance**  
+- **PWM-based Speed Adjustment**  
+- **Servo-Based Ultrasonic Scanning**  
+- **OLED Display for Real-time Feedback**  
+- **RGB LED Ring Status Indicator**  
+- **ESP-NOW Wireless Communication**  
+- **Solar Backup Charging System**
+
+---
+
+## Power System
+
+| Source         | Powers                  | Regulated by         |
+|----------------|--------------------------|-----------------------|
+| 4× AA Lithium  | ESP32, sensors, OLED     | LM2596 to 5V          |
+| 18650 Battery  | Motors                   | XL6009 to 6V          |
+| Solar Panel    | Charges 18650            | BMS Module            |
+
+> Fallback logic: if motor battery drops, the rover switches to main power.
+
+---
+
+## Operating Modes
+
+### Manual Mode
+
+- Direction and speed controlled by buttons
+- Servo angle adjusted manually
+- LED toggle + speed tuning supported
+
+### Autonomous Mode
+
+- Triggered by combo (LEFT + RIGHT)
+- Activates continuous scanning and obstacle logic:
+  ```cpp
+  if (distance < threshold) {
+    scanServo();
+    decideNewDirection();
+  }
+  ```
+
+---
+
+## Controller Button Mapping
+
+| Button | Function                      |
+|--------|-------------------------------|
+| UP     | Rotate Servo Left             |
+| DOWN   | Rotate Servo Right            |
+| FORWARD| Move Forward                  |
+| BACK   | Move Backward                 |
+| LEFT   | Turn Left                     |
+| RIGHT  | Turn Right                    |
+| CENTER | Center Servo to 90°           |
+| LIGHT  | Toggle RGB LED Ring           |
+| SPEED+ | Increase Motor Speed (PWM)    |
+| SPEED– | Decrease Motor Speed (PWM)    |
+| LEFT+RIGHT | Hold 3s to toggle Autonomous Mode |
+
+---
+
+## Troubleshooting
+
+- **No Movement** → Check battery voltage and motor wiring.
+- **No Response** → Ensure ESP-NOW is initialized with matching MACs.
+- **Sensor Issues** → Recalibrate and check alignment/obstruction.
+
+---
+
+## Control Instructions
+
+- Power ON both Rover and Controller
+- Rover enters standby awaiting ESP-NOW input
+- Use 5-way input to move, scan, and toggle features
+- OLED will show real-time telemetry:
+  - Distance in cm
+  - Current mode
+  - Speed (PWM level)
+  - Servo angle
+
+---
+
+> 📘 Full code examples, diagrams, and wiring visuals will be providedd later in this repo.
+> Developed and tested using Arduino IDE with ESP32 board definitions installed.
+
+---
+
+© 2025 – Built by Moutaz Baaj. Powered by open hardware and creative engineering.
