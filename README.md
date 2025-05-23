@@ -109,6 +109,8 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 ### 1. `rover.ino`
 
 - Sets up PWM for motor speed :
+
+  Example:
 ```ccp
 // PWM Configuration for motor speed control
 #define PWMA 21    // Rear Motor PWM pin
@@ -122,6 +124,8 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 
 
 - Receives ESP-NOW commands, parses instruction struct:
+
+  Example:
   ```cpp
   struct Command {
     int direction;
@@ -151,7 +155,8 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 ## Features
 
 - **Manual Control**  
-- **Autonomous Driving with Obstacle Avoidance**  
+- **Autonomous Driving with Obstacle Avoidance**
+- **WIFI AP control**
 - **PWM-based Speed Adjustment**  
 - **Servo-Based Ultrasonic Scanning**  
 - **OLED Display for Real-time Feedback**  
