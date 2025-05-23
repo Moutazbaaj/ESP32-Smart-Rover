@@ -262,7 +262,7 @@ ___
 
 ---
 
-> 📘 Full code examples, diagrams, and wiring visuals will be providedd later in this repo.
+> 📘 diagrams, and wiring visuals will be providedd later in this repo.
 > Developed and tested using Arduino IDE with ESP32 board definitions installed.
 
 ---
