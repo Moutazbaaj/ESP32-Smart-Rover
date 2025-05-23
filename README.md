@@ -16,7 +16,8 @@ This repository contains the complete codebase, wiring details, and setup instru
 7. [Operating Modes](#operating-modes)
 8. [Controller Button Mapping](#controller-button-mapping)
 9. [Troubleshooting](#troubleshooting)
-10. [Control Instructions](#control-instructions)
+10. [User Customization Notes](#User-customization-notes)
+11. [Control Instructions](#control-instructions)
 
 ---
 
@@ -206,6 +207,47 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 - **Sensor Issues** → Recalibrate and check alignment/obstruction.
 
 ---
+
+## User Customization Notes
+
+To personalize and adapt the Smart Rover system to your setup, you’ll need to manually edit a few parameters in the code:
+
+### 1. Wi-Fi Access Point (AP) Configuration
+
+The Rover can host its own Wi-Fi Access Point, allowing you to connect directly via a web browser or a custom-built iOS/Android app.  
+> 📱 A small iOS controller sketch is included in the repository as a starting point.
+
+Update the following lines in the rover code to customize your AP name and password:
+
+```cpp
+// Wi-Fi AP settings
+const char* ssid = "SmartRover";   // <-- Customize the AP name
+const char* pass = "12345678";     // <-- Set your desired password
+```
+
+### 2. ESP-NOW MAC Address Setup
+
+#### On the Rover:
+Set the MAC address of the controller ESP32 so the rover can recognize and connect to it:
+
+```cpp
+// MAC Address of Controller (must match controller's MAC)
+uint8_t controllerMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x62, 0x90}; // <-- Replace with your controller's MAC
+```
+
+#### On the Controller:
+Set the MAC address of the rover ESP32:
+
+```cpp
+// MAC Address of the Rover (must match rover's MAC)
+uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4}; // <-- Replace with your rover's MAC
+```
+
+> 🛠️ If you don’t know your ESP32’s MAC address, a helper sketch is included in the repository.  
+> Flash it to your ESP32, connect it to Wi-Fi, and read the MAC address via the serial monitor before uploading the main rover or controller code.
+
+
+___
 
 ## Control Instructions
 
