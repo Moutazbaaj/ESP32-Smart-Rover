@@ -9,18 +9,18 @@ import Foundation
 import SwiftUICore
 import SwiftUI
 
-class ControllerViewModel: ObservableObject {
+class viewModel: ObservableObject {
     
-    static let shared = ControllerViewModel()
+    static let shared = viewModel()
     
-    @Published var statusMessage = "Smart Rover Ready"
+    @Published var statusMessage = "Smart Rover Ready!"
     private var activeCommands = Set<String>()
     private var lastSentCommand = ""
     private var comboWasActive = false
     private var holdTimer: Timer?
     private let baseURL = "http://192.168.4.1"
     
-
+    
     
     func holdButton(_ label: String, command: String) -> some View {
         Text(label)
