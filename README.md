@@ -98,7 +98,7 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 - Control logic (ESP32 + sensors + OLED) powered from regulated 5V line.
 - Motors are isolated via TB6612FNG and powered from stepped-up 6V.
 
-> Refer to the pin assignments within the code and ensure VIN/EN pins are properly handled (ESP32 EN tied to 10k pull-up if needed).
+> Refer to the pin assignments within the code and ensure VIN/EN pins are properly handled (ESP32 EN tied to 10k pull-up to reduce noise if needed).
 
 ---
 
@@ -108,7 +108,19 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 
 ### 1. `rover.ino`
 
-- Sets up PWM for motor speed using `ledcSetup` and `ledcAttachPin`
+- Sets up PWM for motor speed :
+```ccp
+// PWM Configuration for motor speed control
+#define PWMA 21    // Rear Motor PWM pin
+#define PWMB 22    // Front Motor PWM pin
+#define PWM_CHANNEL_A 21  // PWM Channel 2 for Rear Motor
+#define PWM_CHANNEL_B 22  // PWM Channel 0 for Front Motor
+#define PWM_FREQ 5000     // PWM frequency in Hz
+#define PWM_RESOLUTION 8  // 8-bit resolution (0-255)
+```
+
+
+
 - Receives ESP-NOW commands, parses instruction struct:
   ```cpp
   struct Command {
@@ -124,7 +136,7 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 
 ### 2. `controller.ino`
 
-- Uses debounced 5-way tactile input
+- Uses debounced tactile input
 - Implements combo detection:
   - Simultaneous press of LEFT + RIGHT for 3s → toggles autonomous mode
 - Sends structured data packet over ESP-NOW
