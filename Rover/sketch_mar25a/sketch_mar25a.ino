@@ -111,6 +111,10 @@ unsigned long lastIdleReportTime = 0;      // Last idle status report
 const unsigned long IDLE_TIMEOUT = 20;     // 2 seconds idle timeout (units?)
 const unsigned long IDLE_REPORT_INTERVAL = 50; // Send idle update every 5 seconds (units?)
 
+// wifi AP setting:
+const char* ssid = "SmartRover";
+const char* pass = "12345678";
+
 // Web server instance on port 80
 WebServer server(80);
 
@@ -155,7 +159,7 @@ void setup() {
 
   // Initialize WiFi and ESP-NOW
   WiFi.mode(WIFI_AP_STA);  // Support both AP and STA (ESP-NOW)
-  WiFi.softAP("SmartRover", "12345678"); // Create access point
+  WiFi.softAP(ssid, pass); // Create access point
   Serial.println("Access Point Started");
   Serial.print("IP address: ");
   Serial.println(WiFi.softAPIP()); 
