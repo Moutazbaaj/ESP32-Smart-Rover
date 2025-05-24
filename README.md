@@ -5,6 +5,18 @@ This repository contains the complete codebase, wiring details, and setup instru
 
 ---
 
+**ROVER and Controller**
+
+<table>
+  <tr>
+    <td><img src="IMG/8.HEIC" width="250"></td>
+    <td><img src="IMG/9.HEIC" width="250"></td>
+    <td><img src="IMG/12.HEIC" width="250"></td>
+  </tr>
+</table>
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
@@ -34,6 +46,17 @@ The ESP32 Smart Rover is a DIY autonomous rover platform featuring:
 
 ---
 
+**components**
+
+<table>
+  <tr>
+    <td><img src="IMG/1.HEIC" width="250"></td>
+    <td><img src="IMG/2.HEIC" width="250"></td>
+    <td><img src="IMG/3.HEIC" width="250"></td>
+    <td><img src="IMG/4.HEIC" width="250"></td>
+  </tr>
+</table>
+---
 
 ## Components List
 
@@ -102,7 +125,17 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
 
 ---
 
+**Solar System**
 
+<table>
+  <tr>
+    <td><img src="IMG/5.HEIC" width="250"></td>
+    <td><img src="IMG/6.HEIC" width="250"></td>
+    <td><img src="IMG/7.HEIC" width="250"></td>
+    <td><img src="IMG/11.HEIC" width="250"></td>
+  </tr>
+</table>
+---
 
 ## Code Structure
 
@@ -150,6 +183,16 @@ This is the full list of hardware components used in the ESP32 Smart Rover proje
   - Servo angle
   - Speed
 
+---
+
+**IOS COntroller**
+
+<table>
+  <tr>
+    <td><img src="IMG/13.PNG" width="250"></td>
+    <td><img src="IMG/14.PNG" width="250"></td>
+  </tr>
+</table>
 ---
 
 ## Features
