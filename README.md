@@ -43,6 +43,7 @@ The ESP32 Smart Rover is a DIY autonomous rover platform featuring:
 - Remote control via tactile button-based interface with OLED feedback
 - Solar-charged dual battery system
 - PWM-based speed control and LED signaling
+- AP Mode 
 
 ---
 
