@@ -308,6 +308,74 @@ uint8_t roverMac[6] = {0x78, 0x42, 0x1C, 0x6D, 0x1D, 0xB4}; // <-- Replace with 
 > Flash it to your ESP32, connect it to Wi-Fi, and read the MAC address via the serial monitor before uploading the main rover or controller code.
 
 
+### 3. LED Customization: 
+the LED'S can be Customis to any pattern or collor !
+to do this you need to edit the collor in the ledControl()
+```cpp
+void ledControl() {
+  FastLED.clear(); 
+  if (isLightsOn == true) {
+  switch (currentState) {
+    case FORWARD:
+      leds[LED_FRONT_LEFT]     = CRGB::White;
+      leds[LED_FRONT_RIGHT]    = CRGB::White;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::White;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::White;
+      leds[LED_BACK_LEFT_Y]    = CRGB::White;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::White;
+      leds[LED_BACK_LEFT]      = CRGB::White;
+      leds[LED_BACK_RIGHT]     = CRGB::White;
+      break;
+
+    case BACKWARD:
+      leds[LED_FRONT_LEFT]     = CRGB::Red;
+      leds[LED_FRONT_RIGHT]    = CRGB::Red;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::Red;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::Red;
+      leds[LED_BACK_LEFT_Y]    = CRGB::Red;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::Red;
+      leds[LED_BACK_LEFT]      = CRGB::Red;
+      leds[LED_BACK_RIGHT]     = CRGB::Red;
+      break;
+
+    case SCANNING:
+      leds[LED_FRONT_LEFT]     = CRGB::Yellow;
+      leds[LED_FRONT_RIGHT]    = CRGB::Yellow;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::Yellow;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::Yellow;
+      leds[LED_BACK_LEFT_Y]    = CRGB::Yellow;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::Yellow;
+      leds[LED_BACK_LEFT]      = CRGB::Yellow;
+      leds[LED_BACK_RIGHT]     = CRGB::Yellow;
+      break;
+
+    case STOPPED:
+      leds[LED_FRONT_LEFT]     = CRGB::White;
+      leds[LED_FRONT_RIGHT]    = CRGB::White;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::White;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::White;
+      leds[LED_BACK_LEFT_Y]    = CRGB::White;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::White;
+      leds[LED_BACK_LEFT]      = CRGB::White;
+      leds[LED_BACK_RIGHT]     = CRGB::White;
+      break;
+  }
+
+  FastLED.show();
+ } else {
+  FastLED.clear();
+  FastLED.show();
+ }
+}
+```
+> just chnge the name of the collor :
+ ```ccp
+Example: 
+  leds[LED_FRONT_LEFT]     = CRGB::White;
+  leds[LED_FRONT_LEFT]     = CRGB::red;
+  leds[LED_FRONT_LEFT]     = CRGB::green;
+  etc..
+```
 ___
 
 ## Control Instructions
