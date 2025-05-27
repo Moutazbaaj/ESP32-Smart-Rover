@@ -377,7 +377,7 @@ Example:
   etc..
 ```
 
-The LED definition and count can change to your the desire one depend on your LED ring/strap
+The LED definition and count can be manualle changed to fit your LED ring/strap
 
 ```ccp
 // ========== HARDWARE CONFIGURATION ==========
