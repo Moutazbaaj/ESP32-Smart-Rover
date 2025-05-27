@@ -368,7 +368,7 @@ void ledControl() {
  }
 }
 ```
-> just chnge the name of the collor :
+> just change the name of the collor :
  ```ccp
 Example: 
   leds[LED_FRONT_LEFT]     = CRGB::White;
