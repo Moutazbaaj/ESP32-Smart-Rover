@@ -32,6 +32,15 @@ Hardware Components:
 #define LED_PIN 12       // GPIO pin for LED strip
 #define LED_COUNT 8      // Number of LEDs in strip
 
+#define LED_FRONT_LEFT       7
+#define LED_FRONT_RIGHT      1
+#define LED_BACK_LEFT        5
+#define LED_BACK_RIGHT       3
+#define LED_FRONT_LEFT_Y     6
+#define LED_FRONT_RIGHT_Y    2
+#define LED_BACK_LEFT_Y      4
+#define LED_BACK_RIGHT_Y     0
+
 // Motor Control Pins (L298N driver connections)
 #define AIN1 18    // Rear Motor Forward control
 #define AIN2 19    // Rear Motor Backward control
@@ -339,6 +348,7 @@ void setup() {
  * 
  * @param ledStatus True to turn on LEDs, false to turn off
  */
+ /*
 void ledControl(bool ledStatus) {
   if (ledStatus) {
     fill_solid(leds, LED_COUNT, CRGB::White);  // Set all LEDs to white
@@ -348,6 +358,63 @@ void ledControl(bool ledStatus) {
     FastLED.show();   // Update LEDs
   }
 }
+*/
+void ledControl() {
+  FastLED.clear();  // Clear all LEDs before setting new colors
+  if (isLightsOn == true) {
+  switch (currentState) {
+    case FORWARD:
+      leds[LED_FRONT_LEFT]     = CRGB::White;
+      leds[LED_FRONT_RIGHT]    = CRGB::White;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::White;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::White;
+      leds[LED_BACK_LEFT_Y]    = CRGB::White;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::White;
+      leds[LED_BACK_LEFT]      = CRGB::White;
+      leds[LED_BACK_RIGHT]     = CRGB::White;
+      break;
+
+    case BACKWARD:
+      leds[LED_FRONT_LEFT]     = CRGB::Red;
+      leds[LED_FRONT_RIGHT]    = CRGB::Red;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::Red;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::Red;
+      leds[LED_BACK_LEFT_Y]    = CRGB::Red;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::Red;
+      leds[LED_BACK_LEFT]      = CRGB::Red;
+      leds[LED_BACK_RIGHT]     = CRGB::Red;
+      break;
+
+    case SCANNING:
+      leds[LED_FRONT_LEFT]     = CRGB::Yellow;
+      leds[LED_FRONT_RIGHT]    = CRGB::Yellow;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::Yellow;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::Yellow;
+      leds[LED_BACK_LEFT_Y]    = CRGB::Yellow;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::Yellow;
+      leds[LED_BACK_LEFT]      = CRGB::Yellow;
+      leds[LED_BACK_RIGHT]     = CRGB::Yellow;
+      break;
+
+    case STOPPED:
+      leds[LED_FRONT_LEFT]     = CRGB::White;
+      leds[LED_FRONT_RIGHT]    = CRGB::White;
+      leds[LED_FRONT_LEFT_Y]   = CRGB::White;
+      leds[LED_FRONT_RIGHT_Y]  = CRGB::White;
+      leds[LED_BACK_LEFT_Y]    = CRGB::White;
+      leds[LED_BACK_RIGHT_Y]   = CRGB::White;
+      leds[LED_BACK_LEFT]      = CRGB::White;
+      leds[LED_BACK_RIGHT]     = CRGB::White;
+      break;
+  }
+
+  FastLED.show();
+ } else {
+  FastLED.clear();
+  FastLED.show();
+ }
+}
+
 
 // ========== MOTOR CONTROL FUNCTIONS ==========
 
@@ -361,7 +428,11 @@ void moveForward(int speed) {
     ledcWrite(PWM_CHANNEL_A, speed);  // Set rear motor speed
     digitalWrite(AIN1, LOW);    // Set direction forward
     digitalWrite(AIN2, HIGH);
+// Movement states for state machine
+    State currentState = FORWARD;  // Initial state 
+    ledControl();
     Serial.println("MOVING FORWARD");
+
 }
 
 /**
@@ -374,6 +445,8 @@ void moveBackward(int speed){
     ledcWrite(PWM_CHANNEL_A, speed);
     digitalWrite(AIN1, HIGH);   // Set direction backward
     digitalWrite(AIN2, LOW);
+    State currentState = BACKWARD;  // Initial state   
+    ledControl();
     Serial.println("MOVING BACKWARD");
 }
 
@@ -416,7 +489,8 @@ void stopAllMotors() {
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    
+    State currentState = SCANNING;  // Initial state 
+    ledControl();
     Serial.println("STOPPED");
 }
 
@@ -488,6 +562,9 @@ void smoothServoMove(int targetAngle) {
  */
 void scanEnvironment() {
     Serial.println("Starting 180° environment scan");
+
+    State currentState = SCANNING;  // Initial state    Serial.println("MOVING FORWARD");
+    ledControl();
 
     int bestAngle = SERVO_CENTER;   // Default to center
     float maxDistance = 0;          // Track farthest distance
@@ -649,12 +726,12 @@ void onDataReceived(const esp_now_recv_info* sender, const uint8_t* data, int le
                 break;
             case 3:  // Right turn
                 turnRight(255);
-                currentState = TURNINGR;
+               // currentState = TURNINGR;
                 sendRoverStatus("Manual TURNING R", currentDistance, currentServoAngle, motorSpeed);
                 break;  
             case 4:  // Left turn
                 turnLeft(255);
-                currentState = TURNINGL;
+               // currentState = TURNINGL;
                 sendRoverStatus("Manual TURNING L", currentDistance, currentServoAngle, motorSpeed);
                 break;
             case 5:  // Forward-right
@@ -756,7 +833,7 @@ void loop() {
     server.handleClient();
 
     // Update LED status
-    ledControl(isLightsOn);
+    ledControl();
     
     unsigned long now = millis();
 
