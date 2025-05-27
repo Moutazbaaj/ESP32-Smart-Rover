@@ -376,6 +376,24 @@ Example:
   leds[LED_FRONT_LEFT]     = CRGB::green;
   etc..
 ```
+
+The LED definition and count can change to your the desire one depend on your LED ring/strap
+
+```ccp
+// ========== HARDWARE CONFIGURATION ==========
+// LED Configuration
+#define LED_PIN 12       // GPIO pin for LED strip
+#define LED_COUNT 8      // Number of LEDs in strip
+
+#define LED_FRONT_LEFT       7
+#define LED_FRONT_RIGHT      1
+#define LED_BACK_LEFT        5
+#define LED_BACK_RIGHT       3
+#define LED_FRONT_LEFT_Y     6
+#define LED_FRONT_RIGHT_Y    2
+#define LED_BACK_LEFT_Y      4
+#define LED_BACK_RIGHT_Y     0
+```
 ___
 
 ## Control Instructions
