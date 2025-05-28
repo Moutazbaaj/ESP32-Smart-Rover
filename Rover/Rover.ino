@@ -31,7 +31,7 @@ Hardware Components:
 // LED Configuration
 #define LED_PIN 12       // GPIO pin for LED strip
 #define LED_COUNT 8      // Number of LEDs in strip
-
+// LED sellect
 #define LED_FRONT_LEFT       7
 #define LED_FRONT_RIGHT      1
 #define LED_BACK_LEFT        5
