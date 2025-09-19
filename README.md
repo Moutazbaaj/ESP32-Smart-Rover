@@ -409,7 +409,7 @@ ___
 
 ---
 
-> 📘 diagrams, and wiring visuals will be providedd later in this repo.
+> diagrams, and wiring visuals will be providedd later in this repo.
 
 ---
 
