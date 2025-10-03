@@ -1,7 +1,7 @@
 
 # ESP32 Smart Rover
 
-This repository contains the complete codebase, wiring details, and setup instructions for building an ESP32-powered Smart Rover system. It includes both the rover and the dedicated controller configurations.
+This  repository contains the complete codebase, wiring details, and setup instructions for building an ESP32-powered Smart Rover system. It includes both the rover and the dedicated controller configurations.
 
 ---
 
