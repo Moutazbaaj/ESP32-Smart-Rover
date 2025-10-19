@@ -63,7 +63,7 @@ The ESP32 Smart Rover is a DIY autonomous rover platform featuring:
 
 This is the full list of hardware components used in the ESP32 Smart Rover project.
 
-### 1. Microcontrollers
+### 1. Microcontrollers .
 
 * **2× ESP32 Mini D1** – one for the rover, one for the controller
   [Pack of 3 Mini ESP32 Development Boards (Amazon)](https://www.amazon.de/dp/B0CJNMRG37?ref=ppx_pop_mob_ap_share)
