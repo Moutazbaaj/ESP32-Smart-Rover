@@ -409,8 +409,4 @@ ___
 
 ---
 
-> diagrams, and wiring visuals will be providedd later in this repo.
-
----
-
 © 2025 – Built by Moutaz Baaj. Powered by open hardware and creative engineering.
