@@ -411,4 +411,4 @@ ___
 
 ---
 
-© 2025 – Built by Moutaz Baaj. Powered by open hardware and creative engineering.
+© 2025 - 2026 – Built by Moutaz Baaj. Powered by open hardware and creative engineering.
